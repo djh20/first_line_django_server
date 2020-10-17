@@ -41,6 +41,10 @@ INSTALLED_APPS = [
     'corsheaders', # 추가
     'post',
     'member',
+    'system',
+    'keyword_',
+    'reply',
+    'notice',
 ]
 
 MIDDLEWARE = [
@@ -54,6 +58,8 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+    'middleware.CommonFilter.BeforeFilter',
+    'middleware.CommonFilter.AfterFilter',
 ]
 
 ROOT_URLCONF = 'home.urls'
@@ -110,15 +116,13 @@ AUTH_PASSWORD_VALIDATORS = [
 # Internationalization
 # https://docs.djangoproject.com/en/3.1/topics/i18n/
 
-LANGUAGE_CODE = 'en-us'
-
-TIME_ZONE = 'UTC'
-
-USE_I18N = True
-
-USE_L10N = True
-
-USE_TZ = True
+# LANGUAGE_CODE = 'en-us'
+TIME_ZONE = 'Asia/Seoul'
+# USE_I18N = True
+USE_TZ = False
+USE_L10N = False
+DATE_FORMAT = 'Y-m-d'
+DATETIME_FORMAT = 'Y-m-d H:i:s'
 
 
 # Static files (CSS, JavaScript, Images)
@@ -138,3 +142,7 @@ CORS_ORIGIN_ALLOW_ALL = True
 
 SECRET_KEY='fl7540'
 ALGORITHM = 'HS256'
+
+GOOGLE_ANALYTICS = {
+    'google_analytics_id': 'UA-180299470-1',
+}

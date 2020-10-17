@@ -4,5 +4,5 @@ from django.urls import path
 from . import views
 
 urlpatterns = [
-    path('all/', views.MemberController.readAll, name='readAll'),
+    path('all/', views.readAll, name='readAll'),
 ]

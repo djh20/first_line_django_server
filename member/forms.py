@@ -1,8 +1,8 @@
 from django import forms
-from .models import MemberInfo
+from .models import Member
 class LoginForm(forms.ModelForm):
     class Meta:
-        model = MemberInfo
+        model = Member
         fields = ['id','pw']
     
     def __init__(self, *args, **kwargs):
