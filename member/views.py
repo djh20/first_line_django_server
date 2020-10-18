@@ -12,7 +12,7 @@ def login(request):
     if request.method == 'POST':
         data = {}
         try:
-            member = MemberInfo.objects.get(id=loginInfo['id'],pw=loginInfo['pw'])
+            member = Member.objects.get(id=loginInfo['id'],pw=loginInfo['pw'])
             data['id'] = loginInfo['id']
             data['pw'] = loginInfo['pw']
             jwt_data = encode_jason_to_jwt(data)
@@ -21,4 +21,3 @@ def login(request):
         except Exception as e:
             return_data = {'memberInfo' : None, 'message' : '로그인 실패'}
             return JsonResponse(return_data, status=410)
-            

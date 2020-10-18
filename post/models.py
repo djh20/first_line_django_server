@@ -30,7 +30,7 @@ class Post(models.Model):
             'num_reply' : self.num_reply,
             'tag' : self.tag,
             'writer' : self.writer.nickname,
-            'writing_date' : self.writing_date.strftime("%y.%m.%d %p %H:%M"),
+            'writing_date' : self.writing_date.strftime("%y.%m.%d %p %I:%M"),
             'temperature' : self.temperature,
             'keyword' : (self.keyword.get_keyword() if self.keyword != None else "")
         }
