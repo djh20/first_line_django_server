@@ -11,4 +11,12 @@ class Reply(models.Model):
     is_deleted = models.BooleanField(default=False)
     is_blinded = models.BooleanField(default=False)
     prob_is_slang = models.FloatField(default=0.0)
+
+    def get_dic_for_user(self):
+        return {
+                'reply_id' : self.reply_id,
+                'text' : self.text,
+                'writer' : self.writer.nickname,
+                'writing_date' : self.writing_date
+        }
 # Create your models here.

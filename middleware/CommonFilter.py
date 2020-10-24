@@ -4,11 +4,12 @@ from django.conf import settings
 from member.jwt_manager import get_authoritiy_info
 
 class BeforeFilter(MiddlewareMixin):
-    print("")
+    # print("")
     # 테스트 기간 비활성화
-    # def process_request(self, request):
-    #     if self.validate_authority(request) == False:
-    #         return HttpResponseForbidden()
+    def process_request(self, request):
+        print(request.COOKIES)
+        # if self.validate_authority(request) == False:
+            # return HttpResponseForbidden()
         
     
     def validate_authority(self,request):

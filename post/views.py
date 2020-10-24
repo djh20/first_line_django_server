@@ -25,3 +25,15 @@ def admin_read(request):
         return JsonResponse(datas)
     return JsonResponse(datas)
 
+def user_post(request,pk) :
+    if request.method == 'GET':
+        post = Post.objects.get(post_id=pk)
+        if(post == None):
+            return_data = {'message' : '로그인 실패'}
+            return JsonResponse(return_data, status=410)
+        else :
+            return JsonResponse(post.get_dic_for_user())
+
+
+    
+

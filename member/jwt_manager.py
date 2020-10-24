@@ -18,3 +18,12 @@ def get_authoritiy_info(cookie) :
         return dic.authority
     else:
         return 0
+
+def get_member_info(cookie) :
+    print(cookie)
+    if 'jwt' in cookie:
+        jwt_token = cookie.get('jwt')
+        dic = jwt.decode(jwt_token,SECRET_KEY, ALGORITHM)
+        return dic
+    else:
+        return None
