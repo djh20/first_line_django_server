@@ -21,7 +21,6 @@ class Post(models.Model):
     keyword = models.ForeignKey(Keyword, on_delete=models.CASCADE, null=True, blank=True)
 
     def get_dic_for_user(self):
-        # gap  = dattime.now() - self.writing_date
         return {
             'post_id' : self.post_id,
             'title' : self.title,
@@ -33,6 +32,25 @@ class Post(models.Model):
             'writing_date' : self.writing_date.strftime("%y.%m.%d %p %I:%M"),
             'temperature' : self.temperature,
             'keyword' : (self.keyword.get_keyword() if self.keyword != None else "")
+        }
+    def get_dic_for_admin(self):
+        return {
+            'post_id' : self.post_id,
+            'title' : self.title,
+            'text' : self.text,
+            'like' : self.like,
+            'num_reply' : self.num_reply,
+            'tag' : self.tag,
+            'writer' : self.writer.nickname,
+            'writing_date' : self.writing_date.strftime("%y.%m.%d %p %I:%M"),
+            'editing_date' : (self.editing_date if self.editing_date != None else ""),
+            'temperature' : self.temperature,
+            'keyword' : (self.keyword.get_keyword() if self.keyword != None else ""),
+            'is_deleted' : str(self.is_deleted),
+            'is_blinded' : str(self.is_blinded),
+            'prob_p_dp' : self.prob_p_dp,
+            'prob_a_da' : self.prob_a_da,
+            'prob_is_slang' : self.prob_is_slang
         }
 
 

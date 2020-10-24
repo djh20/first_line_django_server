@@ -15,6 +15,8 @@ def login(request):
             member = Member.objects.get(id=loginInfo['id'],pw=loginInfo['pw'])
             data['id'] = loginInfo['id']
             data['pw'] = loginInfo['pw']
+            data['authority'] = str(member.authority)
+            print(data)
             jwt_data = encode_jason_to_jwt(data)
             return_data = {'jwt' : jwt_data, 'message' : '로그인 성공'}
             return JsonResponse(return_data)
