@@ -18,8 +18,11 @@ def login(request):
             data['authority'] = str(member.authority)
             print(data)
             jwt_data = encode_jason_to_jwt(data)
-            return_data = {'jwt' : jwt_data, 'message' : '로그인 성공'}
-            return JsonResponse(return_data)
+            return_data = {'message' : '로그인 성공'}
+            res = JsonResponse(return_data)
+            res.set_cookie('jwt', jwt_data)
+            print("등록완료")
+            return res
         except Exception as e:
             return_data = {'memberInfo' : None, 'message' : '로그인 실패'}
             return JsonResponse(return_data, status=410)
