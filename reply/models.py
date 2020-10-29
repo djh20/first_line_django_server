@@ -19,4 +19,16 @@ class Reply(models.Model):
                 'writer' : self.writer.nickname,
                 'writing_date' : self.writing_date
         }
+    def get_dic_for_admin(self):
+        return {
+                'post_id' : self.reply_id,
+                'reply_id' : self.post_id.post_id,
+                'text' : self.text,
+                'writer' : self.writer.nickname,
+                'writing_date' : self.writing_date,
+                'edting_date' : self.edting_date,
+                'is_deleted' : self.is_deleted,
+                'is_blinded' : self.is_blinded,
+                'prob_is_slang' : self.prob_is_slang,
+        }
 # Create your models here.

@@ -130,4 +130,12 @@ URLS_AUTHORITY={ # 0 비회원, 1 회원, 2 관리자
  '/api/post/all/' : 1,
  '/admin/' : 0, # 추후 삭제 요망
 }
+BERT_SERVER = 'http://haejun.iptime.org:6000/sentiment/analysis/'
 
+AUTHORITY={ # 0 비회원, 1 회원, 2 관리자
+ '비회원' : 0,
+ '회원' : 1,
+ '관리자' : 2, # 추후 삭제 요망
+}
+
+TAG_SEPERATOR='||'

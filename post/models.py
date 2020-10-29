@@ -2,6 +2,7 @@ from django.db import models
 from member.models import Member
 from keyword_.models import Keyword
 from datetime import datetime
+from django.conf import settings
 class Post(models.Model):
     post_id = models.AutoField(primary_key=True)
     title = models.CharField(max_length = 20)
@@ -21,19 +22,25 @@ class Post(models.Model):
     keyword = models.ForeignKey(Keyword, on_delete=models.CASCADE, null=True, blank=True)
 
     def get_dic_for_user(self):
+        tag = []
+        tmp = self.tag.split(settings.TAG_SEPERATOR)
+        for x in tmp:
+            if x!="":
+                tag.append(x)
         return {
             'post_id' : self.post_id,
             'title' : self.title,
             'text' : self.text,
             'like' : self.like,
             'num_reply' : self.num_reply,
-            'tag' : self.tag,
+            'tag' : tag,
             'writer' : self.writer.nickname,
             'writing_date' : self.writing_date.strftime("%y.%m.%d %p %I:%M"),
-            'temperature' : self.temperature,
+            'temperature' : format(self.temperature,".2f"),
             'keyword' : (self.keyword.get_keyword() if self.keyword != None else "")
         }
     def get_dic_for_admin(self):
+        
         return {
             'post_id' : self.post_id,
             'title' : self.title,

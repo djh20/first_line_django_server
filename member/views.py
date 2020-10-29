@@ -4,6 +4,7 @@ from .forms import *
 from django.core.exceptions import ObjectDoesNotExist
 from django.views.decorators.csrf import csrf_exempt
 from django.http import JsonResponse
+from django.conf import settings
 import json
 from .jwt_manager import *
 import re
@@ -23,7 +24,6 @@ def login(request):
             return_data = {'message' : '로그인 성공'}
             res = JsonResponse(return_data)
             res.set_cookie('jwt', jwt_data)
-            print("등록완료")
             return res
         except Exception as e:
             return_data = {'memberInfo' : None, 'message' : '로그인 실패'}
@@ -35,23 +35,34 @@ def register_user(request):
     if request.method == 'POST':
         data ={}
         if(isValidRegistInfo(registInfo)):
-            try:
-
-                member = Member(id=registInfo['id'],pw=registInfo['pw'],name=registInfo['name'],nickname=registInfo['nickname'],age=registInfo['age'],gender=registInfo['gender'],authority=registInfo['authority'],phonenumber=registInfo['phonenumber'],email=registInfo['email'])
-                
-                member.save()
-                data['id'] = registInfo['id']
-                data['pw'] = registInfo['pw']
-                registInfo['authority'] = registInfo['authority']
-                jwt_data = encode_jason_to_jwt(data)
-                return_data = {'jwt':jwt_data, 'message' : '회원가입 성공'}
-                return JsonResponse(return_data)
-            except Exception as e:
-                return_data = {'registInfo':None, 'message' : '회원가입 실패'}
-                return JsonResponse(return_data, status=410)
+            if isExistId(registInfo['id']):
+                try:
+                    member = Member(id=registInfo['id'],pw=registInfo['pw'],name=registInfo['name'],nickname=registInfo['nickname'],age=registInfo['age'],gender=registInfo['gender'],authority=settings.AUTHORITY['회원'],phonenumber=registInfo['phonenumber'],email=registInfo['email'])
+                    member.save()
+                    data['id'] = member.id
+                    data['authority'] = settings.AUTHORITY['회원']
+                    # print(settings.AUTHORITY['회원'])
+                    jwt_data = encode_jason_to_jwt(data)
+                    return_data = {'jwt':jwt_data, 'message' : '회원가입 성공'}
+                    return JsonResponse(return_data)
+                except Exception as e:
+                    print(e)
+                    return_data = {'message' : '회원가입 실패, 관리자에게 문의바랍니다.'}
+                    return JsonResponse(return_data, status=410)
+            else:
+                return_data = {'message' : '이미 존재하는 아이디입니다.'}
+                return JsonResponse(return_data, status=411)
         else:
-            return_data = {'registInfo':None, 'message' : '회원가입 실패\n이메일 또는 전화번호를 확인하세요.'}
-            return JsonResponse(return_data, status=410)
+            return_data = {'message' : '이메일 또는 전화번호를 확인하세요.'}
+            return JsonResponse(return_data, status=412)
+
+def isExistId(id):
+    try :
+        member = Member.objects.get(id=id)
+        return False
+    except:
+        return True
+
 
 def isValidRegistInfo(registInfo):
     valid = True
@@ -66,5 +77,4 @@ def isValidRegistInfo(registInfo):
     
     if not phoneNumberCheck.match(phoneNumber):
         valid = False
-
     return valid
