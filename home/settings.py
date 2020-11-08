@@ -39,6 +39,7 @@ INSTALLED_APPS = [
     'keyword_',
     'reply',
     'notice',
+    'report'
 ]
 
 MIDDLEWARE = [
