@@ -6,6 +6,7 @@ from reply.models import Reply
 class Report(models.Model):
     report_id = models.AutoField(primary_key=True)
     report_text = models.TextField(max_length = 300)
+    process_type = models.TextField(max_length = 20, null=True,blank=True)
     process_text = models.TextField(max_length = 300, null=True,blank=True)
     report_date = models.DateTimeField(auto_now_add=True )
     process_date = models.DateTimeField(null=True, blank=True)
@@ -19,12 +20,16 @@ class Report(models.Model):
         return {
             'report_id' : self.report_id,
             'report_text' : self.report_text,
+            'process_type' : self.process_type,
             'process_text' : self.process_text,
             'report_date' : self.report_date.strftime("%y.%m.%d %p %I:%M"),
             'process_date' : self.process_date.strftime("%y.%m.%d %p %I:%M") if self.process_date != None else "",
             'report_writer' : self.report_writer.id if self.report_writer != None else "",
             'process_writer' : self.process_writer.id if self.process_writer != None else "",
-            'is_processed' : str(self.is_processed),
+            'is_processed' : "처리" if self.is_processed else "미처리",
             'reply' : self.reply.reply_id if self.reply != None else "",
             'post' : self.post.post_id if self.post != None else ""
         }
+
+    def get_reported(self):
+        return self.reply if self.reply != None else self.post

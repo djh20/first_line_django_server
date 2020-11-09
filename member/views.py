@@ -28,6 +28,28 @@ def login(request):
         except Exception as e:
             return_data = {'memberInfo' : None, 'message' : '로그인 실패'}
             return JsonResponse(return_data, status=410)
+@csrf_exempt 
+def admin_login(request):
+    loginInfo = json.loads(request.body.decode('utf-8'))
+    if request.method == 'POST':
+        data = {}
+        try:
+            member = Member.objects.get(id=loginInfo['id'],pw=loginInfo['pw'])
+            if member.authority == settings.AUTHORITY['관리자']:
+                data['id'] = loginInfo['id']
+                data['pw'] = loginInfo['pw']
+                data['authority'] = str(member.authority)
+                print(data)
+                jwt_data = encode_jason_to_jwt(data)
+                return_data = {'message' : '로그인 성공'}
+                res = JsonResponse(return_data)
+                res.set_cookie('jwt', jwt_data)
+                return res
+            else :
+                raise Exception
+        except Exception as e:
+            return_data = {'memberInfo' : None, 'message' : '로그인 실패'}
+            return JsonResponse(return_data, status=410)
 
 @csrf_exempt
 def register_user(request):

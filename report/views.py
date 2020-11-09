@@ -59,12 +59,15 @@ def get_reports_by_reply(request, query):
     reports = Report.objects.filter(reply = query)
     return reports
  
-
+def get_reports_by_process_type(request, query):
+    reports = Report.objects.filter(process_type = query)
+    return reports
 
 def process_admin_read(request):
     condition_dic = {
     "신고 번호" : get_reports_by_report_id,
     "신고 내용" : get_reports_by_report_text,
+    "처리 결과" : get_reports_by_process_type,
     "처리 내용" : get_reports_by_process_text,
     "신고일(이상)" : get_reports_by_report_date_upper,
     "신고일(이하)" : get_reports_by_report_date_lower,
@@ -93,22 +96,35 @@ def read_report(request, pk):
         report = Report.objects.filter(report_id = pk).first()
         return JsonResponse({'data' : report.get_for_admin()})
 
-
-def process_report(request, pk):
+@csrf_exempt 
+def process_report(request):
     if request.method == "POST":
         try :
             report_info = json.loads(request.body.decode('utf-8'))
-            report = Report.objects.filter(report_id = pk).first()
-            process_writer = get_member_info(request.COOKIES)['id']
+
+            report_id = report_info['report_id']
             process_text = report_info['process_text']
+            process_type = report_info['process_type']
+            process_writer = Member.objects.get(id = get_member_info(request.COOKIES)['id'])
+
+            report = Report.objects.filter(report_id = report_id).first()
+            reported = report.get_reported()
+            if process_type == "블라인드" : 
+                reported.is_blinded = True
+            elif process_type == "삭제" : 
+                reported.is_deleted = True
+            reported.save()
+            report.process_type = process_type
             report.process_writer = process_writer
             report.process_text = process_text
             report.process_date = timezone.now()
             report.is_processed = True
+
             report.save()
-            return JsonResponse({'data' : {'message' : "success"}}, status=200)
+            return JsonResponse({'message' : "성공적으로 삭제되었습니다"}, status=200)
         except Exception as e:
-            return JsonResponse({'data' : {'message' : "fail"}}, status=400)
+            print(e)
+            return JsonResponse({'message' : "처리에 실패했습니다"}, status=400)
 
 
         
