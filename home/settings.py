@@ -140,3 +140,5 @@ AUTHORITY={ # 0 비회원, 1 회원, 2 관리자
 }
 
 TAG_SEPERATOR='||'
+
+KEYWORD_ALLOW_GAP = 30

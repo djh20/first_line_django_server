@@ -50,11 +50,11 @@ def get_notices_by_sender_id(request, query):
     return notices
 
 def get_notices_by_send_datetime_upper(request, query):
-    notices = Notice.objects.filter(send_datetime__gt = query)
+    notices = Notice.objects.filter(send_datetime__gte = query)
     return notices
 
 def get_notices_by_send_datetime_lower(request, query):
-    notices = Notice.objects.filter(send_datetime__lt = query)
+    notices = Notice.objects.filter(send_datetime__lte = query)
     return notices
 
 def get_notices_by_is_read(request, query):

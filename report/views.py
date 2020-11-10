@@ -31,16 +31,16 @@ def get_reports_by_process_text(request, query):
     reports = Report.objects.filter(process_text__icontains = query)
     return reports
 def get_reports_by_report_date_upper(request, query):
-    reports = Report.objects.filter(report_date__gt = query)
+    reports = Report.objects.filter(report_date__gte = query)
     return reports
 def get_reports_by_report_date_lower(request, query):
-    reports = Report.objects.filter(report_date__lt = query)
+    reports = Report.objects.filter(report_date__lte = query)
     return reports
 def get_reports_by_process_date_upper(request, query):
-    reports = Report.objects.filter(process_date__gt = query)
+    reports = Report.objects.filter(process_date__gte = query)
     return reports
 def get_reports_by_process_date_lower(request, query):
-    reports = Report.objects.filter(process_date__lt = query)
+    reports = Report.objects.filter(process_date__lte = query)
     return reports
 def get_reports_by_report_writer(request, query):
     reports = Report.objects.filter(report_writer = query)
