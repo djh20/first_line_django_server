@@ -7,4 +7,13 @@ class Notice(models.Model):
     text = models.TextField(max_length=3000)
     send_datetime = models.DateTimeField(auto_now_add=True)
     is_read = models.BooleanField(default = False)
-# Create your models here.
+    
+    def get_for_admin(self):
+        return {
+            'notice_id' : self.notice_id,
+            'receiver_id' : self.receiver_id.id,
+            'sender_id' : self.sender_id.id,
+            'send_datetime' : self.send_datetime.strftime("%y.%m.%d %p %I:%M"),
+            'text' : self.text,
+            'is_read' : str(self.is_read)
+        }
