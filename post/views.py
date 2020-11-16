@@ -1030,7 +1030,7 @@ def user_read_writed_post(request):
     member = Member.objects.get(id = member_info['id'])
     posts = Post.objects.filter(writer = member)
     datas = {}
-    index = len(lookup_records) - 1
+    index = len(posts) - 1
     for post in posts:
         datas[index] = post.get_dic(False)
         index -= 1
