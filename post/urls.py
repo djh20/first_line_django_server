@@ -11,5 +11,6 @@ urlpatterns = [
     path('', views.user_search_post, name='user_search_post'),
     path('like/<int:pk>/', views.user_like_post, name ='user_like_post'),
     path('like/record/',views.user_read_like_post,name='user_read_like_post'),
-    path('lookup/record/',views.user_read_lookup_post, name='user_read_lookup_post')
+    path('lookup/record/',views.user_read_lookup_post, name='user_read_lookup_post'),
+    path('write/record/', views.user_read_writed_post, name='user_read_writed_post')
 ]

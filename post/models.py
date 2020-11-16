@@ -103,8 +103,8 @@ class LookupRecord(models.Model):
     member_id = models.ForeignKey(Member, on_delete=models.CASCADE)
     post_id = models.ForeignKey(Post, on_delete=models.CASCADE)
     date = models.DateTimeField(auto_now_add=True)
-    temperature = models.FloatField()
-    is_like = models.BooleanField()
+    temperature = models.FloatField(default = 0.0)
+    is_like = models.BooleanField(default = False)
 
     def get_dic(self):
         return {
