@@ -352,7 +352,7 @@ def create_reply(memberInfo,replyInfo):
 
             # 게시글 작성자에게 알림 전송 - 게시글 작성자가 아닌 사람이 댓글을 작성한 경우
             if post.writer.id != member.id:
-                process_create_notice(post.post_id,replyInfo['text'],member,post.writer)
+                process_create_notice(0,post.post_id,replyInfo['text'],member,post.writer) # 0:댓글
 
             return JsonResponse({'message':"댓글 등록 성공"}, status=200)
         except Exception as e:

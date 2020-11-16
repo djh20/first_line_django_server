@@ -9,6 +9,7 @@ from django.views.decorators.csrf import csrf_exempt
 from django.conf import settings
 from member.models import Member, SementicRecord
 from keyword_.models import Keyword
+from notice.views import process_create_notice
 import json
 import datetime
 from urllib import parse
@@ -984,6 +985,10 @@ def user_like_post(requestm,pk):
             lookup_record.save()
             post.num_good = post.num_good + 1 
             post.save()
+
+            # 알림 등록
+            process_create_notice(1,post,"",member,post.writer)   # 1 : 좋아요
+            
             return JsonResponse({'message':'게시글 좋아요가 등록되었습니다.'},status=200)
     except:
         return JsonResponse({'message':'게시글 좋아요 처리에 실패했습니다.'},status=411)
