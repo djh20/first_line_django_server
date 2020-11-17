@@ -89,12 +89,12 @@ def login(request):
 
             jwt_data = encode_jason_to_jwt(data)
             return_data = {'message' : '로그인 성공'}
-            res = JsonResponse(return_data)
+            res = JsonResponse(return_data, status = 200)
             res.set_cookie('jwt', jwt_data)
             return res
         except Exception as e:
             return_data = {'memberInfo' : None, 'message' : '로그인 실패'}
-            return JsonResponse(return_data, status=410)
+            return JsonResponse(return_data, status=452)
 
 @csrf_exempt 
 def admin_login(request):
@@ -108,7 +108,7 @@ def admin_login(request):
                     raise Exception("비정상적인 접근")
             except Exception as e:
                 return_data = {'memberInfo' : None, 'message' : '비정상적인 접근'}
-                return JsonResponse(return_data, status=411)
+                return JsonResponse(return_data, status=487)
             password = member.pw
             print(password)
             if not bcrypt.checkpw(loginInfo['pw'].encode('utf-8') ,password.encode('utf-8')):
@@ -119,12 +119,12 @@ def admin_login(request):
 
             jwt_data = encode_jason_to_jwt(data)
             return_data = {'message' : '로그인 성공'}
-            res = JsonResponse(return_data)
+            res = JsonResponse(return_data, status = 200)
             res.set_cookie('jwt', jwt_data)
             return res
         except Exception as e:
             return_data = {'memberInfo' : None, 'message' : '로그인 실패'}
-            return JsonResponse(return_data, status=410)
+            return JsonResponse(return_data, status=452)
 
 
 # ==================================================================================================================================
@@ -138,38 +138,38 @@ def admin_search_member(search_code,query):
 
     if code['아이디'] == search_code:
         datas = search_member_id(query)
-        return JsonResponse(datas)
+        return JsonResponse(datas, status = 200)
 
     elif code['필명'] == search_code:
         print('필명')
         datas = search_member_nickname(query)
-        return JsonResponse(datas)
+        return JsonResponse(datas, status = 200)
 
     elif code['나이 (이상)'] == search_code:
         datas = search_member_age_over(query)
-        return JsonResponse(datas)
+        return JsonResponse(datas, status = 200)
 
     elif code['나이 (이하)'] == search_code:
         datas = search_member_age_under(query)
-        return JsonResponse(datas)
+        return JsonResponse(datas, status = 200)
 
     elif code['성별'] == search_code:
         datas = search_member_gender(query)
-        return JsonResponse(datas)
+        return JsonResponse(datas, status = 200)
 
     elif code['권한'] == search_code:
         datas = search_member_auth(query)
-        return JsonResponse(datas)
+        return JsonResponse(datas, status = 200)
 
     elif code['휴대폰 번호'] == search_code:
         datas = search_member_phonenumber(query)
-        return JsonResponse(datas)    
+        return JsonResponse(datas, status = 200)    
 
     elif code['이메일'] == search_code:
         datas = search_member_email(query)
-        return JsonResponse(datas)  
+        return JsonResponse(datas, status = 200)  
     else:
-        return JsonResponse({'message':'코드 에러\n잘못된 요청 코드입니다.'},status = 412)
+        return JsonResponse({'message':'코드 에러\n잘못된 요청 코드입니다.'},status = 460)
 
 def search_member_id(query):
     member = Member.objects.get(id__contains = query)
@@ -256,27 +256,27 @@ def user_create_info(registInfo):
     # 회원가입 정보 검증 과정
     if isExist_id(registInfo['id']):
         return_data = {'message' : '이미 존재하는 아이디입니다.'}
-        return JsonResponse(return_data, status = 411)
+        return JsonResponse(return_data, status = 453)
     
     if not isValid_nickname(registInfo['nickname']):
         return_data = {'message' : '이미 존재하는 닉네임입니다.'}
-        return JsonResponse(return_data, status = 412)
+        return JsonResponse(return_data, status = 454)
 
     if not isValid_id(registInfo['id']):
         return_data = {'message' : '잘못된 아이디 형식입니다.'}
-        return JsonResponse(return_data, status = 413)
+        return JsonResponse(return_data, status = 455)
 
     if not isValid_password(registInfo['pw']):
         return_data = {'message' : '잘못된 비밀번호 형식입니다.\n영문자,숫자,특수문자 포함 8~16자\n &나 | 제외'}
-        return JsonResponse(return_data, status = 414)
+        return JsonResponse(return_data, status = 456)
 
     if not isValid_email(registInfo['email']):
         return_data = {'message' : '잘못된 이메일 형식입니다.'}
-        return JsonResponse(return_data, status = 415)
+        return JsonResponse(return_data, status = 457)
 
     if not isValid_phonenumber(registInfo['phonenumber']):
         return_data = {'message' : '잘못된 전화번호 형식입니다.'}
-        return JsonResponse(return_data, status = 416)
+        return JsonResponse(return_data, status = 458)
 
     # 회원가입 정보 등록 과정
     try:
@@ -294,7 +294,7 @@ def user_create_info(registInfo):
     except Exception as e:
         print(e)
         return_data = {'message' : '회원가입 실패, 관리자에게 문의바랍니다.'}
-        return JsonResponse(return_data, status=410)
+        return JsonResponse(return_data, status=459)
 
 
 # ==================================================================================================================================
@@ -327,17 +327,17 @@ def user_update_info(member_info, newInfo):
     member = Member.objects.get(id = member_info['id'])
 
     if not isValid_password(newInfo['pw']):
-        return JsonResponse({'message': '사용 불가능한 비밀번호입니다.'},status=411)
+        return JsonResponse({'message': '사용 불가능한 비밀번호입니다.'},status=456)
     
     if not isValid_email(newInfo['email']):
-        return JsonResponse({'message': '잘못된 이메일 형식입니다.'},status=412)
+        return JsonResponse({'message': '잘못된 이메일 형식입니다.'},status=457)
     
     if not isValid_phonenumber(newInfo['phonenumber']):
-        return JsonResponse({'message': '잘못된 전화번호 형식입니다.'},status=413)
+        return JsonResponse({'message': '잘못된 전화번호 형식입니다.'},status=458)
 
     if member.nickname != newInfo['nickname']:
         if not isValid_nickname(newInfo['nickname']):
-            return JsonResponse({'message': '사용 불가능한 닉네임입니다.'},status=415)
+            return JsonResponse({'message': '사용 불가능한 닉네임입니다.'},status=454)
     
     
     if not newInfo['pw'] == member.pw:
@@ -361,13 +361,13 @@ def admin_update_info(newInfo):
 
         if member.nickname != newInfo['nickname']:
             if not isValid_nickname(newInfo['nickname']):
-                return JsonResponse({'message': '사용 불가능한 닉네임입니다.'},status=415)
+                return JsonResponse({'message': '사용 불가능한 닉네임입니다.'},status=454)
 
         if not isValid_email(newInfo['email']):
-            return JsonResponse({'message': '잘못된 이메일 형식입니다.'},status=412)
+            return JsonResponse({'message': '잘못된 이메일 형식입니다.'},status=457)
     
         if not isValid_phonenumber(newInfo['phonenumber']):
-            return JsonResponse({'message': '잘못된 전화번호 형식입니다.'},status=413)
+            return JsonResponse({'message': '잘못된 전화번호 형식입니다.'},status=458)
 
         if not newInfo['pw'] == member.pw:
             password = bcrypt.hashpw(newInfo['pw'].encode('utf-8'),bcrypt.gensalt())
@@ -382,7 +382,7 @@ def admin_update_info(newInfo):
         member.save()
         return JsonResponse({'message':'회원정보 수정이 완료되었습니다.'}, status=200)
     except:
-        return JsonResponse({'message':'회원정보 수정에 실패하였습니다.'}, status=416)
+        return JsonResponse({'message':'회원정보 수정에 실패하였습니다.'}, status=461)
 
 
 
@@ -441,15 +441,15 @@ def user_read_sementic(memberInfo, temp_code):
 
     if code['당일'] == temp_code:
         datas = user_read_sementic_for_today(memberInfo)
-        return JsonResponse(datas)
+        return JsonResponse(datas, status = 200)
         
     elif code['최근일주일'] == temp_code:
         datas = user_read_sementic_for_week(memberInfo)
-        return JsonResponse(datas)
+        return JsonResponse(datas, status = 200)
 
     elif code['최근한달'] == temp_code:
         datas = user_read_sementic_for_month(memberInfo)
-        return JsonResponse(datas)
+        return JsonResponse(datas, status = 200)
 
 
 # 최근 일주일간의 감정지수를 조회하는 함수

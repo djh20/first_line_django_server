@@ -35,11 +35,11 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'post',
     'member',
-    'system',
     'keyword_',
     'reply',
     'notice',
-    'report'
+    'report',
+    'log'
 ]
 
 MIDDLEWARE = [
@@ -131,7 +131,7 @@ URLS_AUTHORITY={ # 0 비회원, 1 회원, 2 관리자
  '/api/post/all/' : 1,
  '/admin/' : 0, # 추후 삭제 요망
 }
-BERT_SERVER = 'http://haejun.iptime.org:6000/sentiment/analysis/'
+BERT_SERVER = 'http://haejun.iptime.org:6000/analyzer/analysis/'
 
 AUTHORITY={ # 0 비회원, 1 회원, 2 관리자
  '비회원' : 0,

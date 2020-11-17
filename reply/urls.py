@@ -7,4 +7,5 @@ urlpatterns = [
    path('', views.user_process_reply, name='user_process'),
     path('manage/', views.admin_process_reply, name='admin_process'),
     path('manage/blind/',views.admin_blind_reply, name='admin_blind_replies'),
+    path('write/record/', views.user_read_writed_reply, name='user_read_writed_post'),
 ]
