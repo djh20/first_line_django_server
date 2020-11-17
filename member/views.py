@@ -110,7 +110,6 @@ def admin_login(request):
                 return_data = {'memberInfo' : None, 'message' : '비정상적인 접근'}
                 return JsonResponse(return_data, status=411)
             password = member.pw
-            print(password)
             if not bcrypt.checkpw(loginInfo['pw'].encode('utf-8') ,password.encode('utf-8')):
                 raise Exception('로그인 실패') 
             data['id'] = loginInfo['id']
