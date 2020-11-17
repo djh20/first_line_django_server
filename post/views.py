@@ -9,6 +9,7 @@ from django.views.decorators.csrf import csrf_exempt
 from django.conf import settings
 from member.models import Member, SementicRecord
 from keyword_.models import Keyword
+from notice.views import process_create_notice
 import json
 import datetime
 from urllib import parse
@@ -984,6 +985,10 @@ def user_like_post(requestm,pk):
             lookup_record.save()
             post.num_good = post.num_good + 1 
             post.save()
+
+            # 알림 등록
+            process_create_notice(1,post,"",member,post.writer)   # 1 : 좋아요
+            
             return JsonResponse({'message':'게시글 좋아요가 등록되었습니다.'},status=200)
     except:
         return JsonResponse({'message':'게시글 좋아요 처리에 실패했습니다.'},status=411)
@@ -991,7 +996,7 @@ def user_like_post(requestm,pk):
 
 
 # ==================================================================================================================================
-#                                               사용자 게시글 좋아요, 조회 기록 조회 함수
+#                                               사용자 게시글 좋아요, 조회 기록 조회, 작성 게시글 조회 함수
 # ==================================================================================================================================
  
 @csrf_exempt
@@ -1016,6 +1021,18 @@ def user_read_lookup_post(request):
     index = len(lookup_records) - 1
     for record in lookup_records:
         datas[index] = record.get_dic()
+        index -= 1
+    return JsonResponse(datas)
+
+@csrf_exempt
+def user_read_writed_post(request):
+    member_info = get_member_info(request.COOKIES)
+    member = Member.objects.get(id = member_info['id'])
+    posts = Post.objects.filter(writer = member)
+    datas = {}
+    index = len(posts) - 1
+    for post in posts:
+        datas[index] = post.get_dic(False)
         index -= 1
     return JsonResponse(datas)
 

@@ -6,6 +6,7 @@ from member.jwt_manager import get_member_info
 from django.views.decorators.csrf import csrf_exempt
 from post.models import Post
 from member.models import Member
+from notice.views import process_create_notice
 import requests, json
 from django.conf import settings
 from urllib import parse
@@ -348,6 +349,11 @@ def create_reply(memberInfo,replyInfo):
             reply.save()
             post.num_reply = post.num_reply + 1
             post.save()
+
+            # 게시글 작성자에게 알림 전송 - 게시글 작성자가 아닌 사람이 댓글을 작성한 경우
+            if post.writer.id != member.id:
+                process_create_notice(0,post.post_id,replyInfo['text'],member,post.writer) # 0:댓글
+
             return JsonResponse({'message':"댓글 등록 성공"}, status=200)
         except Exception as e:
                 print(e)

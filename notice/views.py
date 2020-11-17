@@ -126,4 +126,25 @@ def process_delete_my_notice(request):
         notice.save()
         return JsonResponse({'message' : '삭제 성공'}, status=200)
     except :
+<<<<<<< HEAD
         return JsonResponse({'message' : '유효하지 않은 접근'}, status=401)
+=======
+        return JsonResponse({'message' : '유효하지 않은 접근'}, status=401)
+
+
+def process_create_notice(notice_code,post_id,text,sender,receiver):
+    code = {'댓글':0,'좋아요':1}
+    try:
+        url = '/post/'+str(post_id)
+        if code['댓글'] == int(notice_code):
+            store_text = "{}님이 내 게시글에 댓글을 남겼습니다. : {} ".format(sender.nickname,text)
+        elif code['좋아요'] == int(notice_code):
+            store_text = "{}님이 내 게시글에 좋아요를 남겼습니다".format(sender.nickname)
+        new_notice = Notice(receiver_id=receiver,sender_id=sender,text=store_text,source_url=url)
+        new_notice.save()
+    except:
+        print("알림등록에 실패하였습니다.")
+        print("post_id : {}\n sender : {}\nreceiver : {}\ntext : {}".format(post_id,sender,receiver,text))
+    
+
+>>>>>>> bfc330b7fbd7ce3a0f760162c62ea6c186e673b6
