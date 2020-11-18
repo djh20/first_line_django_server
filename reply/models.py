@@ -24,6 +24,7 @@ class Reply(models.Model):
         if self.is_blinded == True:
             return {
             'reply_id': self.reply_id,
+            'post_id': self.post_id.post_id,
             'text': '블라인드 처리된 댓글입니다.',
             'writer': self.writer.nickname,
             'writing_date': (self.writing_date if self.editing_date == None else self.editing_date)
@@ -31,6 +32,7 @@ class Reply(models.Model):
         else:
             return {
                 'reply_id': self.reply_id,
+                'post_id': self.post_id.post_id,
                 'text': self.text,
                 'writer': self.writer.nickname,
                 'writing_date': (self.writing_date if self.editing_date == None else self.editing_date)
