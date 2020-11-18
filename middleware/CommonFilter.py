@@ -33,14 +33,21 @@ class AfterFilter(MiddlewareMixin):
         #######   로그 남기기   #######
         field = self.get_code(request.path)
         print("필드 {}, 코드 {}".format(field,response.status_code))
-        resultCode_detail = ResultCode.objects.get(field = field, code = response.status_code)
+        
+        # 지정한 코드가 아닌경우 => 세계에서 약속된 코드인경우 detail은 존재하지 않음
+        try:
+            resultCode_detail = ResultCode.objects.get(field = field, code = response.status_code)
+            code_detail = resultCode_detail.code_detail
+        except:
+            code_detail = ''
+        
         url = request.path
         try:
             memberInfo = get_member_info(request.COOKIES)
             member = Member.objects.get(id = memberInfo['id'])
-            create_log(request_ip=request.get_host(), request_method=request.method, url=url, result_code=response.status_code, result_code_detail=resultCode_detail.code_detail, requester=member)
+            create_log(request_ip=request.get_host(), request_method=request.method, url=url, result_code=response.status_code, result_code_detail=code_detail, requester=member)
         except:
-            create_log(request_ip=request.get_host(), request_method=request.method, url=url, result_code=response.status_code, result_code_detail=resultCode_detail.code_detail)
+            create_log(request_ip=request.get_host(), request_method=request.method, url=url, result_code=response.status_code, result_code_detail=code_detail)
         ###############################
 
         #####  로그인 로그 남기기  #####

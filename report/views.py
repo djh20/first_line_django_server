@@ -17,7 +17,7 @@ def process_admin_report(request):
         return process_admin_read(request)
     # if request.method == "POST":
     #     return process_admin_create(request)
-    return JsonResponse({'message' : "존재하지 않는 요청"})
+    return JsonResponse({'message' : "존재하지 않는 요청"},status = 490)
 
 
 
@@ -89,12 +89,12 @@ def process_admin_read(request):
         data[idx] = report.get_for_admin()
         idx+=1
     print(data)
-    return JsonResponse({'data' : data})
+    return JsonResponse({'data' : data},status=200)
 
 def read_report(request, pk):
     if request.method == "GET":
         report = Report.objects.filter(report_id = pk).first()
-        return JsonResponse({'data' : report.get_for_admin()})
+        return JsonResponse({'data' : report.get_for_admin()},status = 200)
 
 @csrf_exempt 
 def process_report(request):
@@ -124,7 +124,7 @@ def process_report(request):
             return JsonResponse({'message' : "성공적으로 삭제되었습니다"}, status=200)
         except Exception as e:
             print(e)
-            return JsonResponse({'message' : "처리에 실패했습니다"}, status=400)
+            return JsonResponse({'message' : "처리에 실패했습니다"}, status=452)
 
 
         

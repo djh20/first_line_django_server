@@ -30,6 +30,7 @@ def user_process_info(request):
     elif request.method == 'PUT':
         # 사용자 정보 수정
         newInfo = json.loads(request.body.decode('utf-8'))
+        newInfo = newInfo['member']
         member_info = get_member_info(request.COOKIES)
         return user_update_info(member_info, newInfo)
 
@@ -325,9 +326,6 @@ def admin_read_all_info():
 
 def user_update_info(member_info, newInfo):
     member = Member.objects.get(id = member_info['id'])
-
-    if not isValid_password(newInfo['pw']):
-        return JsonResponse({'message': '사용 불가능한 비밀번호입니다.'},status=456)
     
     if not isValid_email(newInfo['email']):
         return JsonResponse({'message': '잘못된 이메일 형식입니다.'},status=457)
@@ -339,11 +337,7 @@ def user_update_info(member_info, newInfo):
         if not isValid_nickname(newInfo['nickname']):
             return JsonResponse({'message': '사용 불가능한 닉네임입니다.'},status=454)
     
-    
-    if not newInfo['pw'] == member.pw:
-        password = bcrypt.hashpw(newInfo['pw'].encode('utf-8'),bcrypt.gensalt())
-        password = password.decode('utf-8')
-        member.pw = password
+
 
     member.name = newInfo['name']
     member.nickname = newInfo['nickname']
@@ -353,6 +347,28 @@ def user_update_info(member_info, newInfo):
     member.gender = newInfo['gender']
     member.save()
     return JsonResponse({'message':'회원정보 수정이 완료되었습니다.'}, status=200)
+
+
+def user_change_password(request):
+    passwordInfo = json.loads(request.body.decode('utf-8'))
+    passwordInfo = passwordInfo['password']
+    before_password=passwordInfo['before'] 
+    new_password=passwordInfo['after']
+
+    member_info = get_member_info(request.COOKIES)
+    member = Member.objects.get(id = member_info['id'])
+    password = member.pw
+
+    if not bcrypt.checkpw(before_password.encode('utf-8') ,password.encode('utf-8')):
+        return JsonResponse({'message':'기존 비밀번호와 일치하지 않습니다.'},status = 463)
+    
+    password = bcrypt.hashpw(new_password.encode('utf-8'),bcrypt.gensalt())
+    password = password.decode('utf-8')
+    member.pw = password
+    member.save()
+
+    return JsonResponse({'message':'패스워드가 정상적으로 변경되었습니다.'},status = 200)
+
     
         
 def admin_update_info(newInfo):

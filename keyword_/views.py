@@ -59,7 +59,7 @@ def process_admin_read(request):
     for keyword in keywords:
         data[idx] = keyword.get_for_admin()
         idx+=1
-    return JsonResponse({'data' : data})
+    return JsonResponse({'data' : data},status = 200)
 
 
 
@@ -81,17 +81,16 @@ def process_admin_create(request):
             keyword.save()
             return JsonResponse({'message' : '기존 키워드의 사용 예정일이 수정되었습니다'}, status=200)
         except: # 30일 이하
-            return JsonResponse({'message' : '30일 이내에 사용되었거나 사용될 예정입니다'}, status=400)
+            return JsonResponse({'message' : '30일 이내에 사용되었거나 사용될 예정입니다'}, status=452)
     except : 
         try: # 새로운 키워드일 경우
             registrator_info = get_member_info(request.COOKIES)
-            print(registrator_info)
             registrator = Member.objects.get(id=registrator_info['id'])
             keyword = Keyword(keyword=keyword_text, recent_used_date = to_use_date, registrator=registrator)
             keyword.save()
             return JsonResponse({'message' : '새로운 키워드가 등록되었습니다'}, status=200)
         except : 
-            return JsonResponse({'message' : '권한이 없습니다'}, status=400)
+            return JsonResponse({'message' : '권한이 없습니다'}, status=453)
 
 
 

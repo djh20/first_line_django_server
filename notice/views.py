@@ -14,7 +14,7 @@ def process_admin_notice(request):
         return process_admin_read(request)
     if request.method == "POST":
         return process_admin_create(request)
-    return JsonResponse({'message' : "존재하지 않는 요청"})
+    return JsonResponse({'message' : "존재하지 않는 요청"},status=490)
 
 def process_admin_create(request):
     notice_info = json.loads(request.body.decode('utf-8'))
@@ -31,11 +31,11 @@ def process_admin_create(request):
                 notice.save()
                 return JsonResponse({'message' : "등록에 성공했습니다"}, status=200)
             except Exception as e:
-                return JsonResponse({'message' : "내용 누락"}, status=403)    
+                return JsonResponse({'message' : "내용 누락"}, status=452)    
         except Exception as e:
-            return JsonResponse({'message' : "존재 하지 않는 발신자"}, status=402)
+            return JsonResponse({'message' : "존재 하지 않는 발신자"}, status=453)
     except Exception as e:
-        return JsonResponse({'message' : "존재 하지 않는 수신자"}, status=401)
+        return JsonResponse({'message' : "존재 하지 않는 수신자"}, status=454)
 
 
 
@@ -85,7 +85,7 @@ def process_admin_read(request):
     for notice in notices:
         data[idx] = notice.get_for_admin()
         idx+=1
-    return JsonResponse({'data' : data})
+    return JsonResponse({'data' : data},status=200)
 
 def get_text_match(query, currentPage):
     notices = Notice.objects.filter(text__icontains = query)
@@ -100,7 +100,7 @@ def process_user_notice(request):
         if request.method == "DELETE":
             return process_delete_my_notice(request)
     except :
-        return JsonResponse({'message' : '유효하지 않은 접근'}, status=401)
+        return JsonResponse({'message' : '유효하지 않은 접근'}, status=490)
 
 def process_read_my_notice(request):
     try:
@@ -115,7 +115,7 @@ def process_read_my_notice(request):
                 idx-=1
         return JsonResponse({'data' : data}, status=200)
     except:
-        return JsonResponse({'message' : '유효하지 않은 접근'}, status=401)
+        return JsonResponse({'message' : '유효하지 않은 접근'}, status=455)
             
 @csrf_exempt 
 def process_delete_my_notice(request):
@@ -126,7 +126,7 @@ def process_delete_my_notice(request):
         notice.save()
         return JsonResponse({'message' : '삭제 성공'}, status=200)
     except :
-        return JsonResponse({'message' : '유효하지 않은 접근'}, status=401)
+        return JsonResponse({'message' : '유효하지 않은 접근'}, status=456)
 
 
 def process_create_notice(notice_code,post_id,text,sender,receiver):
