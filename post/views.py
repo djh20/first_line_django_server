@@ -110,7 +110,7 @@ def admin_search_post(request):
 
 # 게시글 검색 함수
 def search_post(search_code,query,isAdmin):
-    if search_code == None and query == '':
+    if query == '':
         datas = search_post_entire(isAdmin)
         return JsonResponse(datas, status=200)
         
@@ -121,22 +121,18 @@ def search_post(search_code,query,isAdmin):
     'A/DA(이하)':25, '욕설확률(이상)':26, '욕설확률(이하)':27, '삭제여부':28, '블라인드 여부':29,'내용':30}
 
     if code['전체'] == search_code:
-        print("전체조회")
         datas = search_post_entire(isAdmin)
         return JsonResponse(datas, status=200)
 
     elif code['차가움'] == search_code:
-        print("차가움조회")
         datas = search_post_cold(isAdmin)
         return JsonResponse(datas, status=200)
 
     elif code['따뜻함'] == search_code:
-        print("따뜻함조회")
         datas = search_post_warm(isAdmin)
         return JsonResponse(datas, status=200)
 
     elif code['뜨거움'] == search_code:
-        print("뜨거움조회")
         datas = search_post_hot(isAdmin)
         return JsonResponse(datas, status=200)
 
