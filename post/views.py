@@ -960,7 +960,7 @@ def admin_blind_post(request):
 # ==================================================================================================================================
 
 @csrf_exempt
-def user_like_post(requestm,pk):
+def user_like_post(request,pk):
     try:
         member_info = get_member_info(request.COOKIES)
         member = Member.objects.get(id = member_info['id'])
