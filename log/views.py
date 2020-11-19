@@ -1,6 +1,8 @@
 from django.shortcuts import render
+from django.http import JsonResponse
 from .models import Log, LoginLog, ResultCode
 from member.models import Member
+from member.jwt_manager import get_member_info
 
 
 # Create your views here.
@@ -30,22 +32,39 @@ def create_Login_log(requester_ip,login_id,login_result):
 def search_log(code,query):
     if query == '':
         return read_all_log()
-    log_search_code = {'요청IP':1,'요청자':2,'url':3,'로그일자(이상)':4,'로그일자(이하)':5,'결과':6, '특정결과':7}
 
-    if log_search_code['요청IP'] == code:
-        pass
+    log_search_code = {'전체':0 ,'요청IP':1,'요청자':2,'url':3,'로그일자(이전)':4,'로그일자(이후)':5,'결과':6, '특정결과':7}
+
+    if log_search_code['전체'] == code:
+        return read_all_log()
+
+    elif log_search_code['요청IP'] == code:
+        datas = search_log_ip(query)
+        return JsonResponse(datas,status =200)
+
     elif log_search_code['요청자'] == code:
-        pass
+        datas = search_log_requester(query)
+        return JsonResponse(datas,status =200)
+
     elif log_search_code['url'] == code:
-        pass
-    elif log_search_code['로그일자(이상)'] == code:
-        pass
-    elif log_search_code['로그일자(이하)'] == code:
-        pass
+        datas = search_log_url(query)
+        return JsonResponse(datas,status =200)
+
+    elif log_search_code['로그일자(이전)'] == code:
+        datas = search_log_day_before(query)
+        return JsonResponse(datas,status =200)
+
+    elif log_search_code['로그일자(이후)'] == code:
+        datas = search_log_day_after(query)
+        return JsonResponse(datas,status =200)
+
     elif log_search_code['결과'] == code:
-        pass
+        datas = search_log_result(query)
+        return JsonResponse(datas,status =200)
+
     elif log_search_code['특정결과'] == code:
-        pass
+        datas = search_log_result_code(query)
+        return JsonResponse(datas,status =200)
 
 
 
@@ -59,24 +78,57 @@ def read_all_log():
     return JsonResponse(datas, status = 200)
 
 
-def admin_read_login_log():
+def search_log_ip(query):
+    pass
+
+
+def search_log_requester(query):
+    pass
+
+def search_log_url(query):
+    pass
+
+def search_log_day_before(query):
+    pass
+
+def search_log_day_after(query):
+    pass
+
+def search_log_result(query):
+    pass
+
+def search_log_result_code(query):
+    pass
+
+
+
+
+
+
+
+
+
+
+
+def admin_read_login_log(request):
     datas = {}
     logs = LoginLog.objects.all()
     index = len(logs) - 1
     for log in logs:
         datas[index] = log.get_dic()
         index -= 1
-    return JsonResponse(datas)
+    return JsonResponse(datas,status = 200)
 
 def user_read_login_log(request):
     datas = {}
+    memberInfo = get_member_info(request.COOKIES)
     member = Member.objects.get(id = memberInfo['id'])
     logs = LoginLog.objects.filter(login_id = member.id)
     index = len(logs) - 1
     for log in logs:
         datas[index] = log.get_dic()
         index -= 1
-    return JsonResponse(datas)
+    return JsonResponse(datas,status = 200)
 
 
 

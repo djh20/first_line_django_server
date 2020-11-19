@@ -348,10 +348,9 @@ def user_update_info(member_info, newInfo):
     member.save()
     return JsonResponse({'message':'회원정보 수정이 완료되었습니다.'}, status=200)
 
-
+@csrf_exempt
 def user_change_password(request):
     passwordInfo = json.loads(request.body.decode('utf-8'))
-    passwordInfo = passwordInfo['password']
     before_password=passwordInfo['before'] 
     new_password=passwordInfo['after']
 

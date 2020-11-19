@@ -13,6 +13,7 @@ from notice.views import process_create_notice
 import json
 import datetime
 from urllib import parse
+import requests
 
 # 사용자의 게시글 관련 요청 처리 함수
 @csrf_exempt 

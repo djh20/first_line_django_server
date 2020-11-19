@@ -385,7 +385,7 @@ def user_read_reply(memberInfo, postId):
                 isMine[reply_num] = False
             reply_num += 1         
 
-        return JsonResponse(datas)
+        return JsonResponse(datas,status = 200)
 
         # 하단처럼 받도록 Front 수정 요망
         return JsonResponse({'datas':datas,'isMine':isMine},status = 200)

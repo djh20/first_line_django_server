@@ -66,7 +66,6 @@ class AfterFilter(MiddlewareMixin):
         isReply = re.compile('.*reply\/+')
         isNotice = re.compile('.*notice\/+')
         isReport = re.compile('.*report\/+')
-        isSystem = re.compile('.*system\/+')
         isLog = re.compile('.*log\/+')
         isKeyword = re.compile('.*keyword/+')
 
@@ -84,5 +83,3 @@ class AfterFilter(MiddlewareMixin):
             return 7
         elif isKeyword.match(url):
             return 6
-        elif isSystem.match(url):
-            return 8
