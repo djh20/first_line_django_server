@@ -79,35 +79,69 @@ def read_all_log():
 
 
 def search_log_ip(query):
-    pass
+    datas = {}
+    logs = Log.objects.filter(requester_ip__contains=query)
+    index = len(logs) - 1
+    for log in logs:
+        datas[index] = log.get_dic()
+        index -= 1
+    return JsonResponse(datas, status = 200)
 
-
+# 정상동작하지 않음
 def search_log_requester(query):
-    pass
+    datas = {}
+    # 수정 예정 - 사용자 아이디를 보고 처리하도록 수정
+    logs = Log.objects.filter(requester_id__contains=query)
+    index = len(logs) - 1
+    for log in logs:
+        datas[index] = log.get_dic()
+        index -= 1
+    return JsonResponse(datas, status = 200)
 
 def search_log_url(query):
-    pass
+    datas = {}
+    logs = Log.objects.filter(url__contains=query)
+    index = len(logs) - 1
+    for log in logs:
+        datas[index] = log.get_dic()
+        index -= 1
+    return JsonResponse(datas, status = 200)
 
 def search_log_day_before(query):
-    pass
+    datas = {}
+    logs = Log.objects.filter(logging_date__lte=query)
+    index = len(logs) - 1
+    for log in logs:
+        datas[index] = log.get_dic()
+        index -= 1
+    return JsonResponse(datas, status = 200)
 
 def search_log_day_after(query):
-    pass
+    datas = {}
+    logs = Log.objects.filter(logging_date__gte=query)
+    index = len(logs) - 1
+    for log in logs:
+        datas[index] = log.get_dic()
+        index -= 1
+    return JsonResponse(datas, status = 200)
 
 def search_log_result(query):
-    pass
+    datas = {}
+    logs = Log.objects.filter(result_code_detail__contains=query)
+    index = len(logs) - 1
+    for log in logs:
+        datas[index] = log.get_dic()
+        index -= 1
+    return JsonResponse(datas, status = 200)
 
 def search_log_result_code(query):
-    pass
-
-
-
-
-
-
-
-
-
+    datas = {}
+    logs = Log.objects.filter(result_code = query)
+    index = len(logs) - 1
+    for log in logs:
+        datas[index] = log.get_dic()
+        index -= 1
+    return JsonResponse(datas, status = 200)
 
 
 def admin_read_login_log(request):
