@@ -54,8 +54,9 @@ def admin_process_info(request):
             return admin_read_all_info()
 
     elif request.method == 'POST':
-        # 회원 추가 - 기능 없음
-        pass
+        # 관리자 추가
+        registInfo = json.loads(request.body.decode('utf-8'))
+        return admin_create_info(registInfo)
 
     elif request.method == 'PUT':
         # 특정 사용자 정보 수정
@@ -296,6 +297,45 @@ def user_create_info(registInfo):
         print(e)
         return_data = {'message' : '회원가입 실패, 관리자에게 문의바랍니다.'}
         return JsonResponse(return_data, status=459)
+
+
+def admin_create_info(registInfo):
+    data ={}
+    # 관리자등록 정보 검증 과정
+    if isExist_id(registInfo['id']):
+        return_data = {'message' : '이미 존재하는 아이디입니다.'}
+        return JsonResponse(return_data, status = 453)
+    
+    if not isValid_nickname(registInfo['nickname']):
+        return_data = {'message' : '이미 존재하는 닉네임입니다.'}
+        return JsonResponse(return_data, status = 454)
+
+    if not isValid_email(registInfo['email']):
+        return_data = {'message' : '잘못된 이메일 형식입니다.'}
+        return JsonResponse(return_data, status = 457)
+
+    if not isValid_phonenumber(registInfo['phonenumber']):
+        return_data = {'message' : '잘못된 전화번호 형식입니다.'}
+        return JsonResponse(return_data, status = 458)
+
+    # 관리자 정보 등록 과정
+    try:
+        password = bcrypt.hashpw(registInfo['pw'].encode('utf-8'),bcrypt.gensalt())
+        password = password.decode('utf-8')
+        member = Member(id=registInfo['id'], pw=password, name=registInfo['name'], nickname=registInfo['nickname'], age=registInfo['age'],
+                        gender=registInfo['gender'], authority=settings.AUTHORITY['관리자'], phonenumber=registInfo['phonenumber'], email=registInfo['email'])
+        member.save()
+        data['id'] = member.id
+        data['authority'] = settings.AUTHORITY['관리자']
+        print(settings.AUTHORITY['관리자'])
+        jwt_data = encode_jason_to_jwt(data)
+        return_data = {'jwt': jwt_data, 'message': '관리자 등록 성공'}
+        return JsonResponse(return_data, status=200)
+    except Exception as e:
+        print(e)
+        return_data = {'message' : '관리자등록 실패'}
+        return JsonResponse(return_data, status=459)
+
 
 
 # ==================================================================================================================================
