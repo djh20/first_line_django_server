@@ -127,16 +127,50 @@ GOOGLE_ANALYTICS = {
 }
 
 URLS_AUTHORITY={ # 0 비회원, 1 회원, 2 관리자
- '/api/member/login/' : 0,
- '/api/post/all/' : 1,
- '/admin/' : 0, # 추후 삭제 요망
+#member
+ 'api/member/':0,
+ 'api/member/login/':1,
+ 'api/member/change/password':1,
+ 'api/member/sementic/':1,
+ 'api/member/admin/login/':2,
+ '/api/member/manage/' : 2,
+
+#post
+ '/api/post/' : 1,
+ '/api/post/<int:pk>/' : 1,
+ '/api/post/like/<int:pk>/' : 1,
+ '/api/post/like/record/' : 1,
+ '/api/post/lookup/record/' : 1,
+ '/api/post/write/record/' : 1,
+ '/api/post/manage/' : 2,
+ '/api/post/manage/blind/' : 2,
+
+#reply
+ '/api/reply/': 1,
+ '/api/reply/write/record/': 1,
+ '/api/reply/manage/': 2,
+ '/api/reply/manage/blind/': 2,
+
+#report
+ '/api/report/<int:pk>': 2,
+ '/api/report/manage/': 2,
+ '/api/report/manage/process/': 2,
+
+#keyword
+ '/api/keyword/manage/':2,
+
+#log
+ '/api/log/login/': 1,
+ '/api/log/manage/': 2,
+ '/api/log/manage/login/': 2,
 }
+
 BERT_SERVER = 'http://haejun.iptime.org:6000/analyzer/analysis/'
 
 AUTHORITY={ # 0 비회원, 1 회원, 2 관리자
  '비회원' : 0,
  '회원' : 1,
- '관리자' : 2, # 추후 삭제 요망
+ '관리자' : 2,
 }
 
 TAG_SEPERATOR='||'
