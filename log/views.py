@@ -87,11 +87,10 @@ def search_log_ip(query):
         index -= 1
     return JsonResponse(datas, status = 200)
 
-# 정상동작하지 않음
 def search_log_requester(query):
     datas = {}
-    # 수정 예정 - 사용자 아이디를 보고 처리하도록 수정
-    logs = Log.objects.filter(requester_id__contains=query)
+    member = Member.objects.get(id = query)
+    logs = Log.objects.filter(requester_id = member)
     index = len(logs) - 1
     for log in logs:
         datas[index] = log.get_dic()
