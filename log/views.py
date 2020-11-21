@@ -38,18 +38,22 @@ def search_log(code,query):
     if query == '':
         return read_all_log()
 
-    log_search_code = {'전체':0 ,'요청IP':1,'요청자':2,'url':3,'로그일자(이전)':4,'로그일자(이후)':5,'결과':6, '특정결과':7}
+    log_search_code = {'전체':0 ,'요청IP':1,'요청자':2,'요청방식':3,'url':4,'로그일자(이후)':5,'로그일자(이전)':6,'결과코드':7, '결과내용':8}
 
     if log_search_code['전체'] == code:
         return read_all_log()
 
     elif log_search_code['요청IP'] == code:
         datas = search_log_ip(query)
-        return JsonResponse(datas,status =200)
+        return JsonResponse(datas,status = 200)
 
     elif log_search_code['요청자'] == code:
         datas = search_log_requester(query)
-        return JsonResponse(datas,status =200)
+        return JsonResponse(datas,status = 200)
+    
+    elif log_search_code['요청방식'] == code:
+        datas = search_log_request_method(query)
+        return JsonResponse(datas, status = 200)
 
     elif log_search_code['url'] == code:
         datas = search_log_url(query)
@@ -63,12 +67,12 @@ def search_log(code,query):
         datas = search_log_day_after(query)
         return JsonResponse(datas,status =200)
 
-    elif log_search_code['결과'] == code:
-        datas = search_log_result(query)
+    elif log_search_code['결과코드'] == code:
+        datas = search_log_result_code(query)
         return JsonResponse(datas,status =200)
 
-    elif log_search_code['특정결과'] == code:
-        datas = search_log_result_code(query)
+    elif log_search_code['결과내용'] == code:
+        datas = search_log_result(query)
         return JsonResponse(datas,status =200)
 
 
@@ -101,6 +105,16 @@ def search_log_requester(query):
         datas[index] = log.get_dic()
         index -= 1
     return JsonResponse(datas, status = 200)
+
+def search_log_request_method(query):
+    datas ={}
+    logs = Log.objects.filter(request_method = query)
+    index = len(logs) - 1
+    for log in logs:
+        datas[index] = log.get_dic()
+        index -= 1
+    return JsonResponse(datas, status = 200)    
+
 
 def search_log_url(query):
     datas = {}
