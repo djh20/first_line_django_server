@@ -777,7 +777,7 @@ def user_read_post(request,pk) :
             memberInfo = get_member_info(request.COOKIES)
             member = Member.objects.get(id = memberInfo['id'])
             
-            return JsonResponse(post.get_dic(False))
+            # return JsonResponse(post.get_dic(False))
             
             # Front 측에서 아래의 형식을 받도록 수정해야 함
             if post.writer.id == member.id:
@@ -902,6 +902,7 @@ def admin_update_post(memberInfo, postInfo):
 
 # 사용자가 게시글을 삭제하는 함수
 def user_delete_post(memberInfo,postInfo):
+    print("dasdsa")
     member_id = memberInfo['id']
     post_id = postInfo['id']
     
