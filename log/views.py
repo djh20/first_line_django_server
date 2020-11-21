@@ -9,9 +9,14 @@ from member.jwt_manager import get_member_info
 def admin_process_log(request):
     if request.method == 'GET':
         # 로그 내역 조회
-        code = int(request.GET.get('code'))
-        query = request.GET.get('query')
-        return search_log(code,query)
+        try:
+            code = int(request.GET.get('code'))
+            query = request.GET.get('query')
+            return search_log(code,query)
+        except expression as identifier:
+            return read_all_log()
+        
+        
 
 # requester는 요청자 정보
 def create_log(request_ip, request_method, url, result_code, result_code_detail, requester=None):
