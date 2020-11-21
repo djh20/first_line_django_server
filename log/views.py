@@ -24,7 +24,9 @@ def create_log(request_ip, request_method, url, result_code, result_code_detail,
     if requester != None:
         member = Member.objects.get(id = requester['id'])
         request_log = Log(requester_ip = request_ip, request_method=request_method, url=url,result_code = result_code, result_code_detail= result_code_detail, requester_id = member)
+        print("요청자 존재 로그 생성")
     else:
+        print("요청자 없는 로그 생성")
         request_log = Log(requester_ip = request_ip, request_method=request_method, url=url,result_code = result_code, result_code_detail= result_code_detail)
     request_log.save()
 
