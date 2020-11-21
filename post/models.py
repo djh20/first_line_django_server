@@ -7,7 +7,6 @@ class Post(models.Model):
     post_id = models.AutoField(primary_key=True)
     title = models.CharField(max_length = 20)
     text = models.TextField(max_length = 3000)
-    like = models.IntegerField(default=0)
     tag = models.CharField(max_length = 100)
     num_reply = models.IntegerField(default = 0)
     writer = models.ForeignKey(Member, on_delete=models.CASCADE)
