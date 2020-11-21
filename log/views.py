@@ -158,15 +158,9 @@ def search_log_result_code(query):
         index -= 1
     return datas
 
-
-def admin_read_login_log(request):
-    datas = {}
-    logs = LoginLog.objects.all()
-    index = len(logs) - 1
-    for log in logs:
-        datas[index] = log.get_dic()
-        index -= 1
-    return JsonResponse(datas,status = 200)
+#########################################################################################################################
+#                                       로그인 로그 관리
+#########################################################################################################################
 
 def user_read_login_log(request):
     datas = {}
@@ -180,4 +174,97 @@ def user_read_login_log(request):
     return JsonResponse(datas,status = 200)
 
 
+def admin_process_login_log(request):
+    if request.method == 'GET':
+        # 로그 내역 조회
+        try:
+            code = int(request.GET.get('code'))
+            query = request.GET.get('query')
+            return search_login_log(code,query)
+        except:
+            return admin_read_login_log_all()
 
+
+def search_login_log(code, query):
+    if query == '':
+        return admin_read_login_log_all()
+
+    codeTable = {"전체":0,'요청자 ip':1,'아이디':2,'로그인 날짜 (이후)':3,'로그인 날짜 (이전)':4,'로그인 결과':5}
+
+    if codeTable['전체'] == code:
+        return admin_read_login_log_all()
+    
+    elif codeTable['요청자 ip'] == code:
+        datas = search_login_log_requester_ip(query)
+        return JsonResponse(datas, status = 200)
+
+    elif codeTable['아이디'] == code:
+        datas = search_login_log_request_id(query)
+        return JsonResponse(datas, status = 200)
+
+    elif codeTable['로그인 날짜 (이후)'] == code:
+        datas = search_login_log_day_after(query)
+        return JsonResponse(datas, status = 200)
+
+    elif codeTable['로그인 날짜 (이전)'] == code:
+        datas = search_login_log_day_before(query)
+        return JsonResponse(datas, status = 200)
+
+    elif codeTable['로그인 결과'] == code:
+        datas = search_login_log_result(query)
+        return JsonResponse(datas, status = 200)    
+
+
+def admin_read_login_log_all():
+    datas = {}
+    logs = LoginLog.objects.all()
+    index = len(logs) - 1
+    for log in logs:
+        datas[index] = log.get_dic()
+        index -= 1
+    return JsonResponse(datas,status = 200)
+
+def search_login_log_requester_ip(query):
+    datas = {}
+    logs = LoginLog.objects.filter(requester_ip__contains = query)
+    index = len(logs) - 1
+    for log in logs:
+        datas[index] = log.get_dic()
+        index -= 1
+    return datas
+
+def search_login_log_request_id(query):
+    datas = {}
+    logs = LoginLog.objects.filter(login_id = query)
+    index = len(logs) - 1
+    for log in logs:
+        datas[index] = log.get_dic()
+        index -= 1
+    return datas
+
+def search_login_log_day_after(query):
+    datas = {}
+    logs = LoginLog.objects.filter(logging_date__gte = query)
+    index = len(logs) - 1
+    for log in logs:
+        datas[index] = log.get_dic()
+        index -= 1
+    return datas
+
+def search_login_log_day_before(query):
+    datas = {}
+    logs = LoginLog.objects.filter(logging_date__lte = query)
+    index = len(logs) - 1
+    for log in logs:
+        datas[index] = log.get_dic()
+        index -= 1
+    return datas
+
+def search_login_log_result(query):
+    datas = {}
+    logs = LoginLog.objects.filter(login_result = query)
+    index = len(logs) - 1
+    for log in logs:
+        datas[index] = log.get_dic()
+        index -= 1
+    return datas
