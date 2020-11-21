@@ -13,7 +13,7 @@ def admin_process_log(request):
             code = int(request.GET.get('code'))
             query = request.GET.get('query')
             return search_log(code,query)
-        except expression as identifier:
+        except:
             return read_all_log()
         
         

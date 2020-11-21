@@ -44,7 +44,9 @@ class AfterFilter(MiddlewareMixin):
         url = request.path
         try:
             memberInfo = get_member_info(request.COOKIES)
+            print(memberInfo['id'])
             member = Member.objects.get(id = memberInfo['id'])
+            print(member.id)
             create_log(request_ip=request.get_host(), request_method=request.method, url=url, result_code=response.status_code, result_code_detail=code_detail, requester=member)
         except:
             create_log(request_ip=request.get_host(), request_method=request.method, url=url, result_code=response.status_code, result_code_detail=code_detail)
