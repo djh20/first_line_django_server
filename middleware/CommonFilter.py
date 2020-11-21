@@ -45,12 +45,9 @@ class AfterFilter(MiddlewareMixin):
         try:
             memberInfo = get_member_info(request.COOKIES)
             member = Member.objects.get(id = memberInfo['id'])
-            print("요청자 {} 의 로그 생성중".format(member.id))
             create_log(request_ip=request.get_host(), request_method=request.method, url=url, result_code=response.status_code, result_code_detail=code_detail, requester=member)
-            print("요청자 있는 로그 생성완료")
-        except:
+        except Exception as e:
             create_log(request_ip=request.get_host(), request_method=request.method, url=url, result_code=response.status_code, result_code_detail=code_detail)
-            print("요청자 없는 로그 생성완료")
         ###############################
 
         #####  로그인 로그 남기기  #####
