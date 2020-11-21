@@ -129,6 +129,7 @@ def process_delete_my_notice(request):
         return JsonResponse({'message' : '유효하지 않은 접근'}, status=456)
 
 
+
 def process_create_notice(notice_code,post_id,text,sender,receiver):
     code = {'댓글':0,'좋아요':1}
     try:
@@ -144,3 +145,4 @@ def process_create_notice(notice_code,post_id,text,sender,receiver):
         print("post_id : {}\n sender : {}\nreceiver : {}\ntext : {}".format(post_id,sender,receiver,text))
     
 
+>>>>>>> bfc330b7fbd7ce3a0f760162c62ea6c186e673b6

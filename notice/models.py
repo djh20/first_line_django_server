@@ -18,6 +18,17 @@ class Notice(models.Model):
             'text' : self.text,
             'is_read' : str(self.is_read),
             'source_url' : self.source_url
+<<<<<<< HEAD
+=======
+        }
+
+    def get_for_user(self):
+        return {
+            'notice_id' : self.notice_id,
+            'send_datetime' : self.send_datetime.strftime("%y.%m.%d %p %I:%M"),
+            'text' : self.text,
+            'source_url' : self.source_url
+>>>>>>> bfc330b7fbd7ce3a0f760162c62ea6c186e673b6
         }
 
     def get_for_user(self):
@@ -27,3 +38,4 @@ class Notice(models.Model):
             'text' : self.text,
             'source_url' : self.source_url
         }
+
