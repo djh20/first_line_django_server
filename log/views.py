@@ -22,9 +22,7 @@ def admin_process_log(request):
 def create_log(request_ip, request_method, url, result_code, result_code_detail, requester=None):
     if requester != None:
         request_log = Log(requester_ip = request_ip, request_method=request_method, url=url,result_code = result_code, result_code_detail= result_code_detail, requester_id = requester)
-        print("요청자 존재 로그 생성")
     else:
-        print("요청자 없는 로그 생성")
         request_log = Log(requester_ip = request_ip, request_method=request_method, url=url,result_code = result_code, result_code_detail= result_code_detail)
     request_log.save()
 
@@ -94,17 +92,16 @@ def search_log_ip(query):
     for log in logs:
         datas[index] = log.get_dic()
         index -= 1
-    return JsonResponse(datas, status = 200)
+    return datas
 
 def search_log_requester(query):
     datas = {}
-    member = Member.objects.get(id = query)
-    logs = Log.objects.filter(requester_id = member)
+    logs = Log.objects.filter(requester_id__id = query)
     index = len(logs) - 1
     for log in logs:
         datas[index] = log.get_dic()
-        index -= 1
-    return JsonResponse(datas, status = 200)
+        index -= 1    
+    return datas
 
 def search_log_request_method(query):
     datas ={}
@@ -113,7 +110,7 @@ def search_log_request_method(query):
     for log in logs:
         datas[index] = log.get_dic()
         index -= 1
-    return JsonResponse(datas, status = 200)    
+    return datas   
 
 
 def search_log_url(query):
@@ -123,7 +120,7 @@ def search_log_url(query):
     for log in logs:
         datas[index] = log.get_dic()
         index -= 1
-    return JsonResponse(datas, status = 200)
+    return datas
 
 def search_log_day_before(query):
     datas = {}
@@ -132,7 +129,7 @@ def search_log_day_before(query):
     for log in logs:
         datas[index] = log.get_dic()
         index -= 1
-    return JsonResponse(datas, status = 200)
+    return datas
 
 def search_log_day_after(query):
     datas = {}
@@ -141,7 +138,7 @@ def search_log_day_after(query):
     for log in logs:
         datas[index] = log.get_dic()
         index -= 1
-    return JsonResponse(datas, status = 200)
+    return datas
 
 def search_log_result(query):
     datas = {}
@@ -150,7 +147,7 @@ def search_log_result(query):
     for log in logs:
         datas[index] = log.get_dic()
         index -= 1
-    return JsonResponse(datas, status = 200)
+    return datas
 
 def search_log_result_code(query):
     datas = {}
@@ -159,7 +156,7 @@ def search_log_result_code(query):
     for log in logs:
         datas[index] = log.get_dic()
         index -= 1
-    return JsonResponse(datas, status = 200)
+    return datas
 
 
 def admin_read_login_log(request):
