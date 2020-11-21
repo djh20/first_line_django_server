@@ -424,16 +424,13 @@ def admin_update_info(newInfo):
         if not isValid_phonenumber(newInfo['phonenumber']):
             return JsonResponse({'message': '잘못된 전화번호 형식입니다.'},status=458)
 
-        if not newInfo['pw'] == member.pw:
-            password = bcrypt.hashpw(newInfo['pw'].encode('utf-8'),bcrypt.gensalt())
-            password = password.decode('utf-8')
-            member.pw = password
         member.name = newInfo['name']
         member.nickname = newInfo['nickname']
         member.email = newInfo['email']
         member.phonenumber = newInfo['phonenumber']
         member.age = newInfo['age']
         member.gender = newInfo['gender']
+        member.authority = settings.AUTHORITY[newInfo['권한']]
         member.save()
         return JsonResponse({'message':'회원정보 수정이 완료되었습니다.'}, status=200)
     except:
