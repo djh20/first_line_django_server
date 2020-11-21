@@ -46,7 +46,7 @@ class AfterFilter(MiddlewareMixin):
             memberInfo = get_member_info(request.COOKIES)
             member = Member.objects.get(id = memberInfo['id'])
             create_log(request_ip=request.get_host(), request_method=request.method, url=url, result_code=response.status_code, result_code_detail=code_detail, requester=member)
-        except:
+        except Exception as e:
             create_log(request_ip=request.get_host(), request_method=request.method, url=url, result_code=response.status_code, result_code_detail=code_detail)
         ###############################
 

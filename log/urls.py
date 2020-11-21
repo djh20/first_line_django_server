@@ -6,5 +6,5 @@ from . import views
 urlpatterns = [
     path('login/', views.user_read_login_log, name = 'user_read_login_log'),
     path('manage/', views.admin_process_log, name='admin_process'),
-    path('manage/login/', views.admin_read_login_log, name='admin_read_login_log'),
+    path('manage/login/', views.admin_process_login_log, name='admin_process_login_log'),
 ]

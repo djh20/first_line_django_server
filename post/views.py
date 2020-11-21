@@ -764,7 +764,6 @@ def user_read_post(request,pk) :
             sementic_record.reflected_number = sementic_record.reflected_number + 1
             sementic_record.save()
 
-
         if(post == None):
             return_data = {'message' : '해당 게시글이 존재하지 않습니다.'}
             return JsonResponse(return_data, status=454)
@@ -777,14 +776,31 @@ def user_read_post(request,pk) :
             memberInfo = get_member_info(request.COOKIES)
             member = Member.objects.get(id = memberInfo['id'])
             
+<<<<<<< HEAD
             # return JsonResponse(post.get_dic(False))
+=======
+            # 프론트 변경시 해당 코드 삭제 ---------------------------------------------------------------------------------------
+            return JsonResponse(post.get_dic(False))
+>>>>>>> 21e87f20ac9d76e622c3e0bec4d4e8b1d4fd287d
             
-            # Front 측에서 아래의 형식을 받도록 수정해야 함
+            # 내가 작성한 게시글인지 확인
             if post.writer.id == member.id:
-                return_data = {'post':post.get_dic(False), 'isMyPost': True}
+                isMyPost = True
             else:
-                return_data = {'post':post.get_dic(False), 'isMyPost': False}
-            return JsonResponse(return_data)
+                isMyPost = False
+            
+            # 내가 좋아요를 한 게시글인지 확인
+            isLike = False
+            try:
+                record = LikeRecord.objects.filter(member_id__id = member.id,post_id__post_id = post.post_id)
+                if len(record) == 1:
+                    isLike = True
+            except:
+                pass
+
+            # Front 측에서 아래의 형식을 받도록 수정해야 함
+            return_data = {'post':post.get_dic(False), 'isMyPost': isMyPost, 'isLike':isLike}
+            return JsonResponse(return_data, status = 200)
 
 
 def admin_read_all_post(request):
