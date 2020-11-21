@@ -17,7 +17,7 @@ class Log(models.Model):
         return {
             'log_id' : self.log_id,
             'requester_ip' : self.requester_ip,
-            'requester_id' : self.requester_id,
+            'requester_id' : (self.requester_id.id if self.requester_id != None else None),
             'request_method' : self.request_method,
             'url' : self.url,
             'logging_date' : self.logging_date,
