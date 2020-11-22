@@ -112,7 +112,7 @@ def admin_keyword_delete(request):
         failCount = 0
 
         for keyword in keywords:
-            key = Keyword.objects.get(keyword = keyword['keyword'])
+            key = Keyword.objects.get(keyword = keyword['id'])
             if key.suggest_amount == 0:
                 key.delete()
             else:
