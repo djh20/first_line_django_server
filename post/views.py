@@ -716,6 +716,8 @@ def write_post(memberInfo, postInfo):
     try:
         # 키워드를 사용한 경우
         keyword = Keyword.objects.get(keyword=postInfo['keyword'])
+        keyword.suggest_amount = keyword.suggest_amount + 1
+        keyword.save()
         post = Post(title=postInfo['title'], text=postInfo['text'], tag=tag, writer=member, keyword=keyword, prob_p_dp=prob_p_dp, prob_a_da=prob_a_da, prob_is_slang=prob_slang, temperature=temperature)
         post.save()
     except:
