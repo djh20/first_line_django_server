@@ -152,6 +152,11 @@ URLS_AUTHORITY={ # 0 비회원, 1 회원, 2 관리자
  '/api/reply/manage/': 2,
  '/api/reply/manage/blind/': 2,
 
+#notice
+ '/api/notice/': 1,
+ '/api/reply/manage/': 2,
+
+
 #report
  '/api/report/<int:pk>': 2,
  '/api/report/manage/': 2,
