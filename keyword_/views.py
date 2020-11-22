@@ -99,7 +99,7 @@ def process_admin_create(request):
             keyword.save()
             return JsonResponse({'message' : '새로운 키워드가 등록되었습니다.'}, status=200)
         except : 
-            return JsonResponse({'message' : '권한이 없습니다.'}, status=453)
+            return JsonResponse({'message' : '키워드 등록에 실패하였습니다.'}, status=453)
 
 
 def admin_keyword_delete(request):
@@ -130,14 +130,18 @@ def admin_keyword_delete(request):
 
 
 def user_process_keyword(request):
-    today = datetime.date.today()
-    today_keyword = Keyword.objects.get(suggest_date = today)
+    try:
+        today = datetime.date.today()
+        today_keyword = Keyword.objects.get(suggest_date = today)
 
-    # 최근 사용일이 오늘이 아닌경우
-    if today_keyword.recent_used_date != today:
-        today_keyword.recent_used_date = today
-        today_keyword.save()
-    return JsonResponse(today_keyword.get_keyword(),status = 200)
+        # 최근 사용일이 오늘이 아닌경우
+        if today_keyword.recent_used_date != today:
+            today_keyword.recent_used_date = today
+            today_keyword.save()
+        return JsonResponse(today_keyword.get_keyword(),status = 200)
+    except:
+        return JsonResponse({'message':'오늘의 키워드가 존재하지 않습니다.'},status = 458)
+    
 
 
     

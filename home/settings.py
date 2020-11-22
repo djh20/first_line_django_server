@@ -163,6 +163,7 @@ URLS_AUTHORITY={ # 0 비회원, 1 회원, 2 관리자
  '/api/report/manage/process/': 2,
 
 #keyword
+ '/api/keyword/':1,
  '/api/keyword/manage/':2,
 
 #log

@@ -87,19 +87,18 @@ def login(request):
             password = member.pw
             if not bcrypt.checkpw(loginInfo['pw'].encode('utf-8') ,password.encode('utf-8')):
                 raise Exception('로그인 실패') 
-
+            
             data['id'] = loginInfo['id']
             data['pw'] = loginInfo['pw']
             data['authority'] = str(member.authority)
 
             jwt_data = encode_jason_to_jwt(data)
-            return_data = {'message' : '로그인 성공'}
-            res = JsonResponse(return_data, status = 200)
-            res.set_cookie('jwt', jwt_data,max_age=3600)
+            res = JsonResponse({'message' : '로그인 성공'}, status = 200)
+            res.set_cookie('jwt', jwt_data, max_age=3600)
             return res
+            
         except Exception as e:
-            return_data = {'memberInfo' : None, 'message' : '로그인 실패'}
-            return JsonResponse(return_data, status=452)
+            return JsonResponse({ 'message' : '로그인 실패'}, status=452)
 
 @csrf_exempt 
 def admin_login(request):
@@ -112,10 +111,9 @@ def admin_login(request):
                 if member.authority != settings.AUTHORITY['관리자']:
                     raise Exception("비정상적인 접근")
             except Exception as e:
-                return_data = {'memberInfo' : None, 'message' : '비정상적인 접근'}
-                return JsonResponse(return_data, status=487)
+                return JsonResponse({'message' : '접근권한이 없습니다.'}, status=487)
+
             password = member.pw
-            print(password)
             if not bcrypt.checkpw(loginInfo['pw'].encode('utf-8') ,password.encode('utf-8')):
                 raise Exception('로그인 실패') 
             data['id'] = loginInfo['id']
@@ -123,13 +121,12 @@ def admin_login(request):
             data['authority'] = str(member.authority)
 
             jwt_data = encode_jason_to_jwt(data)
-            return_data = {'message' : '로그인 성공'}
-            res = JsonResponse(return_data, status = 200)
-            res.set_cookie('jwt', jwt_data,max_age=3600)
+            res = JsonResponse({'message' : '로그인 성공'}, status = 200)
+            res.set_cookie('jwt', jwt_data, max_age=3600)
             return res
         except Exception as e:
-            return_data = {'memberInfo' : None, 'message' : '로그인 실패'}
-            return JsonResponse(return_data, status=452)
+            return JsonResponse({'message' : '로그인 실패'}, status=452)
+    return JsonResponse({'message':'잘못된 요청 메소드'},status = 490)
 
 
 # ==================================================================================================================================
@@ -178,16 +175,12 @@ def admin_search_member(search_code,query):
 
 def search_member_id(query):
     member = Member.objects.get(id__contains = query)
-    data = {}
-    data[0]=member.get_dic()
-    return data
+    return member.get_dic()
 
 
 def search_member_nickname(query):
     member = Member.objects.get(nickname__contains = query)
-    data = {}
-    data[0]=member.get_dic()
-    return data
+    return member.get_dic()
 
 def search_member_age_over(query):
     datas = {}
@@ -268,7 +261,7 @@ def user_create_info(registInfo):
         return JsonResponse(return_data, status = 454)
 
     if not isValid_id(registInfo['id']):
-        return_data = {'message' : '잘못된 아이디 형식입니다.'}
+        return_data = {'message' : '잘못된 아이디 형식입니다.\n특수문자를 미포함한 8~20자로 만들어주세요.'}
         return JsonResponse(return_data, status = 455)
 
     if not isValid_password(registInfo['pw']):
@@ -302,6 +295,7 @@ def user_create_info(registInfo):
         return JsonResponse(return_data, status=459)
 
 
+# 사용하지 않는 함수
 def admin_create_info(registInfo):
     data ={}
     # 관리자등록 정보 검증 과정
@@ -336,7 +330,7 @@ def admin_create_info(registInfo):
         return JsonResponse(return_data, status=200)
     except Exception as e:
         print(e)
-        return_data = {'message' : '관리자등록 실패'}
+        return_data = {'message' : '관리자 등록 실패'}
         return JsonResponse(return_data, status=459)
 
 
@@ -376,12 +370,9 @@ def user_update_info(member_info, newInfo):
     if not isValid_phonenumber(newInfo['phonenumber']):
         return JsonResponse({'message': '잘못된 전화번호 형식입니다.'},status=458)
 
-    if member.nickname != newInfo['nickname']:
-        if not isValid_nickname(newInfo['nickname']):
-            return JsonResponse({'message': '사용 불가능한 닉네임입니다.'},status=454)
+    if member.nickname != newInfo['nickname'] and not isValid_nickname(newInfo['nickname']):
+        return JsonResponse({'message': '사용 불가능한 닉네임입니다.'},status=454)
     
-
-
     member.name = newInfo['name']
     member.nickname = newInfo['nickname']
     member.email = newInfo['email']
@@ -441,8 +432,8 @@ def admin_update_info(newInfo):
 
 
 def anybody_change_password(request):
-    id = json.loads(request.body.decode('utf-8'))
-    member = Member.objects.get(id = id['id'])
+    member_id = json.loads(request.body.decode('utf-8'))
+    member = Member.objects.get(id = member_id['id'])
     newPassword = ''.join(random.SystemRandom().choice(string.ascii_uppercase + string.digits) for _ in range(10))
     # 패스워드 암호화
     password = bcrypt.hashpw(newPassword.encode('utf-8'),bcrypt.gensalt())
@@ -470,7 +461,6 @@ def anybody_change_password(request):
 
 def user_delete_info(member_info):
     member = Member.objects.get(id = member_info['id'])
-
     member.delete()
     return JsonResponse({'message':'회원정보가 삭제되었습니다.\n그동안 이용해주셔서 감사합니다.'}, status=200)
 
@@ -480,7 +470,6 @@ def admin_delete_info(member_infos):
     for member_info in member_infos:
         member = Member.objects.get(id=member_info['id'])
         member.delete()
-
     return JsonResponse({'message':'선택한 회원정보가 삭제되었습니다.'},status=200)
 
 
@@ -504,7 +493,7 @@ def user_sementic_process(request):
 
 # 하루 처음 접속시 초기 감정값 결정하는 함수
 def user_create_sementic_initial(memberInfo,sementicInfo):
-    sementic_code ={'0':36.5, '1':28, '2':32, '3':36.5, '4':38, '5':42}
+    sementic_code ={'0':50, '1':20, '2':40, '3':50, '4':60, '5':80}
     member = Member.objects.get(id = memberInfo['id'])
     senti = SementicRecord(member=member, initial_value=sementic_code[sementicInfo['code']],current_temperature=sementic_code[sementicInfo['code']])
     senti.save()

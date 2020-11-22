@@ -94,8 +94,7 @@ def admin_search_reply(request):
         return search_reply(search_code,query,True)         
     except Exception as e :
         print(e)
-        datas = {'message':'검색중 오류가 발생했습니다.'}
-        return JsonResponse(datas, status=400)
+        return JsonResponse({'message':'댓글 검색중 오류가 발생했습니다.'}, status=458)
 
 def search_reply(search_code,query,isAdmin,memberInfo = None):
     if query == '':
@@ -339,10 +338,10 @@ def create_reply(memberInfo,replyInfo):
             member = Member.objects.get(id = memberInfo['id'])
             post = Post.objects.get(post_id=int(replyInfo['post_id']))
 
-            # params = {'text': replyInfo['text']}
-            # res = requests.get(settings.BERT_SERVER, params = params).json()
+            params = {'text': replyInfo['text']}
+            res = requests.get(settings.BERT_SERVER, params = params).json()
     
-            # prob_slang = res['result']['prob_slang']
+            prob_slang = res['result']['prob_slang']
  
             prob_slang = 0
             reply = Reply(post_id = post, writer = member,text = replyInfo['text'], prob_is_slang=prob_slang)
@@ -356,7 +355,8 @@ def create_reply(memberInfo,replyInfo):
 
             return JsonResponse({'message':"댓글 등록 성공"}, status=200)
         except Exception as e:
-                print(e)
+            print(e)
+            return JsonResponse({'message':"댓글 등록 실패"}, status=453)
     else:
         return JsonResponse({'message':"댓글 등록 실패"}, status=453)
 

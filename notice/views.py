@@ -14,7 +14,7 @@ def process_admin_notice(request):
         return process_admin_read(request)
     if request.method == "POST":
         return process_admin_create(request)
-    return JsonResponse({'message' : "존재하지 않는 요청"},status=490)
+    return JsonResponse({'message' : "잘못된 요청 메소드"},status=490)
 
 def process_admin_create(request):
     notice_info = json.loads(request.body.decode('utf-8'))
@@ -100,7 +100,7 @@ def process_user_notice(request):
         if request.method == "DELETE":
             return process_delete_my_notice(request)
     except :
-        return JsonResponse({'message' : '유효하지 않은 접근'}, status=490)
+        return JsonResponse({'message' : '잘못된 요청 메소드'}, status=490)
 
 def process_read_my_notice(request):
     try:
@@ -115,7 +115,7 @@ def process_read_my_notice(request):
                 idx-=1
         return JsonResponse({'data' : data}, status=200)
     except:
-        return JsonResponse({'message' : '유효하지 않은 접근'}, status=455)
+        return JsonResponse({'message' : '알림 조회 실패'}, status=455)
             
 @csrf_exempt 
 def process_delete_my_notice(request):
@@ -126,7 +126,7 @@ def process_delete_my_notice(request):
         notice.save()
         return JsonResponse({'message' : '삭제 성공'}, status=200)
     except :
-        return JsonResponse({'message' : '유효하지 않은 접근'}, status=456)
+        return JsonResponse({'message' : '알림 삭제 실패'}, status=456)
 
 
 def process_create_notice(notice_code,post_id,text,sender,receiver):
