@@ -764,7 +764,7 @@ def user_read_post(request,pk) :
             except:
                 sementic_record = SementicRecord(member = member)
                 sementic_record.save()
-                
+
             sementic_record = SementicRecord.objects.get(date = datetime.date.today() ,member = member)
             sementic_record.current_temperature = ((sementic_record.current_temperature*sementic_record.reflected_number) + post.temperature)/(sementic_record.reflected_number + 1)
             sementic_record.reflected_number = sementic_record.reflected_number + 1
@@ -775,6 +775,8 @@ def user_read_post(request,pk) :
         # 삭제처리된 게시글인 경우
         elif post.is_deleted == True:
             return JsonResponse({'message' : '해당 게시글이 존재하지 않습니다.'}, status=454)
+        elif post.is_blinded == True:
+            return JsonResponse({'message':'해당 게시글이 블라인드 처리되었습니다.'}, status=460)
         else :
             # 글을 조회하는 사용자가 작성자인지 확인
             memberInfo = get_member_info(request.COOKIES)
