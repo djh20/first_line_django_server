@@ -456,7 +456,8 @@ def anybody_change_password(request):
     result = email.send()
     if result != 1:
         print('패스워드 변경 이메일 송신 실패')
-        print('변경된 패스워드 : {}'.format(newPassword))
+        print('사용자 이메일 : {}\n변경된 패스워드 : {}'.format(email_address,newPassword))
+        return JsonResponse({'message':'이메일 전송에 실패하였습니다.\n다시 시도해 주세요.'},status=464)
         
     return JsonResponse({'message':'성공적으로 변경되었습니다.'},status=200)
 
