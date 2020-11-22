@@ -432,7 +432,7 @@ def admin_update_info(newInfo):
         member.phonenumber = newInfo['phonenumber']
         member.age = newInfo['age']
         member.gender = newInfo['gender']
-        member.authority = settings.AUTHORITY[newInfo['권한']]
+        member.authority = settings.AUTHORITY[newInfo['authority']]
         member.save()
         return JsonResponse({'message':'회원정보 수정이 완료되었습니다.'}, status=200)
     except:
@@ -452,8 +452,12 @@ def anybody_change_password(request):
     member.save()
 
     # 이메일 송신
-    email = EmailMessage('첫줄 임시 비밀번호 발급 안내','첫줄의 비밀번호가 다음과 같이 변경되어 안내드립니다.\n 새 패스워드 : {}\n로그인 후 패스워드 변경 바랍니다.'.format(newPassword),to=[email_address])
-    email.send()
+    email = EmailMessage('첫줄 임시 비밀번호 발급 안내','첫줄의 비밀번호가 다음과 같이 변경되어 안내드립니다.\n\n 새 패스워드 : {}\n\n로그인 후 패스워드 변경 바랍니다.'.format(newPassword),to=[email_address])
+    result = email.send()
+    if result != 1:
+        print('패스워드 변경 이메일 송신 실패')
+        print('변경된 패스워드 : {}'.format(newPassword))
+        
     return JsonResponse({'message':'성공적으로 변경되었습니다.'},status=200)
 
 
