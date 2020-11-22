@@ -95,7 +95,7 @@ def login(request):
             jwt_data = encode_jason_to_jwt(data)
             return_data = {'message' : '로그인 성공'}
             res = JsonResponse(return_data, status = 200)
-            res.set_cookie('jwt', jwt_data)
+            res.set_cookie('jwt', jwt_data,max_age=3600)
             return res
         except Exception as e:
             return_data = {'memberInfo' : None, 'message' : '로그인 실패'}
@@ -125,7 +125,7 @@ def admin_login(request):
             jwt_data = encode_jason_to_jwt(data)
             return_data = {'message' : '로그인 성공'}
             res = JsonResponse(return_data, status = 200)
-            res.set_cookie('jwt', jwt_data)
+            res.set_cookie('jwt', jwt_data,max_age=3600)
             return res
         except Exception as e:
             return_data = {'memberInfo' : None, 'message' : '로그인 실패'}
