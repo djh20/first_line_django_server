@@ -407,9 +407,8 @@ def admin_update_info(newInfo):
     try:
         member = Member.objects.get(id = newInfo['id'])
 
-        if member.nickname != newInfo['nickname']:
-            if not isValid_nickname(newInfo['nickname']):
-                return JsonResponse({'message': '사용 불가능한 닉네임입니다.'},status=454)
+        if member.nickname != newInfo['nickname'] and not isValid_nickname(newInfo['nickname']):
+            return JsonResponse({'message': '사용 불가능한 닉네임입니다.'},status=454)
 
         if not isValid_email(newInfo['email']):
             return JsonResponse({'message': '잘못된 이메일 형식입니다.'},status=457)

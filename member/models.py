@@ -37,6 +37,8 @@ class SementicRecord(models.Model):
 
     def get_dic(self):
         return {
-            'date' : self.date.strftime("%m%d"), 
-            'temperature' : format(self.current_temperature,".2f")
+            'year' : self.date.year, 
+            'month' : self.date.month, 
+            'date' : self.date.day, 
+            'temperature' : format(self.current_temperature,".1f")
         }
