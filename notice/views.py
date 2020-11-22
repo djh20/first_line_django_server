@@ -133,7 +133,7 @@ def process_delete_my_notice(request):
 def process_create_notice(notice_code,post_id,text,sender,receiver):
     code = {'댓글':0,'좋아요':1}
     try:
-        url = '/post/'+str(post_id)
+        url = '/post/detail/'+str(post_id)
         if code['댓글'] == int(notice_code):
             store_text = "{}님이 내 게시글에 댓글을 남겼습니다. : {} ".format(sender.nickname,text)
         elif code['좋아요'] == int(notice_code):
@@ -145,4 +145,3 @@ def process_create_notice(notice_code,post_id,text,sender,receiver):
         print("post_id : {}\n sender : {}\nreceiver : {}\ntext : {}".format(post_id,sender,receiver,text))
     
 
->>>>>>> bfc330b7fbd7ce3a0f760162c62ea6c186e673b6

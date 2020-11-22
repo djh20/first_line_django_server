@@ -468,7 +468,7 @@ def admin_delete_info(member_infos):
 def user_sementic_process(request):
     if request.method == 'GET':
         memberInfo = get_member_info(request.COOKIES)
-        code = int(json.loads(request.GET.get('code')))
+        code = int(request.GET.get('code'))
         return user_read_sementic(memberInfo, code)
 
     elif request.method == 'POST':
@@ -526,6 +526,7 @@ def user_read_sementic_for_month(memberInfo):
     for senti_record in senti_records:
         datas[index] = senti_record.get_dic()
         index -= 1
+    print(datas)
     return datas
 
 # 오늘의 감정지수를 조회하는 함수

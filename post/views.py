@@ -776,12 +776,6 @@ def user_read_post(request,pk) :
             memberInfo = get_member_info(request.COOKIES)
             member = Member.objects.get(id = memberInfo['id'])
             
-<<<<<<< HEAD
-            # return JsonResponse(post.get_dic(False))
-=======
-            # 프론트 변경시 해당 코드 삭제 ---------------------------------------------------------------------------------------
-            return JsonResponse(post.get_dic(False))
->>>>>>> 21e87f20ac9d76e622c3e0bec4d4e8b1d4fd287d
             
             # 내가 작성한 게시글인지 확인
             if post.writer.id == member.id:
@@ -1001,8 +995,7 @@ def user_like_post(request,pk):
             post.save()
 
             # 알림 등록
-            process_create_notice(1,post,"",member,post.writer)   # 1 : 좋아요
-            
+            process_create_notice(1,post.post_id,"",member,post.writer)   # 1 : 좋아요
             return JsonResponse({'message':'게시글 좋아요가 등록되었습니다.'},status=200)
     except:
         return JsonResponse({'message':'게시글 좋아요 처리에 실패했습니다.'},status=458)
@@ -1023,6 +1016,7 @@ def user_read_like_post(request):
     for record in like_records:
         datas[index] = record.get_dic()
         index -= 1
+    print(datas)
     return JsonResponse(datas)
 
 

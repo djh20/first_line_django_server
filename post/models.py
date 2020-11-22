@@ -39,12 +39,11 @@ class Post(models.Model):
             'post_id' : self.post_id,
             'title' : self.title,
             'text' : self.text,
-            'like' : self.like,
             'num_reply' : self.num_reply,
             'tag' : tag,
             'writer' : self.writer.nickname,
             'writing_date' : self.writing_date.strftime("%y.%m.%d %p %I:%M"),
-            'temperature' : format(self.temperature,".2f"),
+            'temperature' : format(self.temperature,".1f"),
             'keyword' : (self.keyword.get_keyword() if self.keyword != None else ""),
             'num_lookup':self.num_lookup,
             'num_good':self.num_good,
@@ -57,7 +56,6 @@ class Post(models.Model):
             'post_id' : self.post_id,
             'title' : self.title,
             'text' : self.text,
-            'like' : self.like,
             'num_reply' : self.num_reply,
             'tag' : self.tag,
             'writer' : self.writer.nickname,
@@ -91,8 +89,8 @@ class LikeRecord(models.Model):
     def get_dic(self):
         return {
             'like_record_id': self.like_record_id,
-            'member' : self.member_id,
-            'post' : self.post_id,
+            'member' : self.member_id.id,
+            'post' : self.post_id.post_id,
             'date' : self.date,
             'temperature' : self.temperature,
         }
