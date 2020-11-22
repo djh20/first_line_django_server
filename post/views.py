@@ -394,7 +394,7 @@ def search_post_num_good_over(query,isAdmin):
         post_num-=1
     return datas
 
-def search_post_num_like_under(query,isAdmin):
+def search_post_num_good_under(query,isAdmin):
     datas ={}
     # 관리자인 경우 blind나 삭제된 게시글을 조회 가능 - 
     if isAdmin:
@@ -759,6 +759,12 @@ def user_read_post(request,pk) :
             lookup_record = LookupRecord(member_id=member,post_id=post,temperature=post.temperature,is_like=False)
             lookup_record.save()
             # 감정지수 남기기
+            try:
+                sementic_record = SementicRecord.objects.get(date = datetime.date.today() ,member = member)
+            except:
+                sementic_record = SementicRecord(member = member)
+                sementic_record.save()
+                
             sementic_record = SementicRecord.objects.get(date = datetime.date.today() ,member = member)
             sementic_record.current_temperature = ((sementic_record.current_temperature*sementic_record.reflected_number) + post.temperature)/(sementic_record.reflected_number + 1)
             sementic_record.reflected_number = sementic_record.reflected_number + 1
