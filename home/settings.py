@@ -129,6 +129,7 @@ GOOGLE_ANALYTICS = {
 URLS_AUTHORITY={ # 0 비회원, 1 회원, 2 관리자
 #member
  'api/member/':0,
+ 'api/member/password/':0,
  'api/member/login/':1,
  'api/member/change/password':1,
  'api/member/sementic/':1,
@@ -176,3 +177,10 @@ AUTHORITY={ # 0 비회원, 1 회원, 2 관리자
 TAG_SEPERATOR='||'
 
 KEYWORD_ALLOW_GAP = 30
+
+EMAIL_HOST = 'smtp.gmail.com'
+EMAIL_PORT = '587'
+EMAIL_HOST_USER = '@gmail.com' 
+EMAIL_HOST_PASSWORD = ''
+EMAIL_USE_TLS = True
+DEFAULT_FROM_EMAIL = EMAIL_HOST_USER

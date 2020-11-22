@@ -5,6 +5,7 @@ from django.core.exceptions import ObjectDoesNotExist
 from django.views.decorators.csrf import csrf_exempt
 from django.http import JsonResponse
 from django.conf import settings
+from django.core.mail import EmailMessage
 import json
 from .jwt_manager import *
 import re
@@ -12,6 +13,8 @@ import bcrypt
 import datetime
 from dateutil.relativedelta import relativedelta
 from urllib import parse
+import random
+import string
 
 
 
@@ -407,8 +410,7 @@ def user_change_password(request):
     member.save()
 
     return JsonResponse({'message':'패스워드가 정상적으로 변경되었습니다.'},status = 200)
-
-    
+   
         
 def admin_update_info(newInfo):
     try:
@@ -436,6 +438,23 @@ def admin_update_info(newInfo):
     except:
         return JsonResponse({'message':'회원정보 수정에 실패하였습니다.'}, status=461)
 
+
+
+def anybody_change_password(request):
+    id = json.loads(request.body.decode('utf-8'))
+    member = Member.objects.get(id = id['id'])
+    newPassword = ''.join(random.SystemRandom().choice(string.ascii_uppercase + string.digits) for _ in range(10))
+    # 패스워드 암호화
+    password = bcrypt.hashpw(newPassword.encode('utf-8'),bcrypt.gensalt())
+    password = password.decode('utf-8')
+    member.pw = password
+    email_address = member.email
+    member.save()
+
+    # 이메일 송신
+    email = EmailMessage('첫줄 임시 비밀번호 발급 안내','첫줄의 비밀번호가 다음과 같이 변경되어 안내드립니다.\n 새 패스워드 : {}\n로그인 후 패스워드 변경 바랍니다.'.format(newPassword),to=[email_address])
+    email.send()
+    return JsonResponse({'message':'성공적으로 변경되었습니다.'},status=200)
 
 
 
