@@ -431,8 +431,12 @@ def admin_update_info(newInfo):
 
 
 def anybody_change_password(request):
-    member_id = json.loads(request.body.decode('utf-8'))
-    member = Member.objects.get(id = member_id['id'])
+    try:
+        member_id = json.loads(request.body.decode('utf-8'))
+        member = Member.objects.get(id = member_id['id'])
+    except:
+        return JsonResponse({'message':'등록되지 않은 사용자입니다.\n아이디를 다시한번 확인해 주세요'},status=465)
+    
     newPassword = ''.join(random.SystemRandom().choice(string.ascii_uppercase + string.digits) for _ in range(10))
     # 패스워드 암호화
     password = bcrypt.hashpw(newPassword.encode('utf-8'),bcrypt.gensalt())
