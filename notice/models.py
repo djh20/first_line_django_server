@@ -16,7 +16,7 @@ class Notice(models.Model):
             'sender_id' : self.sender_id.id,
             'send_datetime' : self.send_datetime.strftime("%y.%m.%d %p %I:%M"),
             'text' : self.text,
-            'is_read' : str(self.is_read),
+            'is_read' : "Y" if self.is_read else "N",
             'source_url' : self.source_url
         }
 

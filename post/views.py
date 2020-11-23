@@ -647,7 +647,7 @@ def search_post_slang_under(query,isAdmin):
         post_num-=1
     return datas
 
-def search_post_is_deleted(query):
+def search_post_is_deleted(query, isAdmin):
     datas ={}
     # 관리자인 경우 blind나 삭제된 게시글을 조회 가능 
     result_posts = Post.objects.filter(is_deleted=query)

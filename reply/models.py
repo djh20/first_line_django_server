@@ -46,7 +46,7 @@ class Reply(models.Model):
             'writer': self.writer.nickname,
             'writing_date': self.writing_date,
             'editing_date': (self.editing_date if self.editing_date != None else ""),
-            'is_deleted': self.is_deleted,
-            'is_blinded': self.is_blinded,
+            'is_deleted': "Y" if self.is_deleted else "N",
+            'is_blinded': "Y" if self.is_blinded else "N",
             'prob_is_slang': self.prob_is_slang,
         }
