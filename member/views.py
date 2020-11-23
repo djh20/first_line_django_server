@@ -173,13 +173,17 @@ def admin_search_member(search_code,query):
         return JsonResponse({'message':'코드 에러\n잘못된 요청 코드입니다.'},status = 460)
 
 def search_member_id(query):
+    datas = {}
     member = Member.objects.get(id__contains = query)
-    return member.get_dic()
+    datas[0] = member.get_dic()
+    return datas
 
 
 def search_member_nickname(query):
+    datas = {}
     member = Member.objects.get(nickname__contains = query)
-    return member.get_dic()
+    datas[0] = member.get_dic()
+    return datas
 
 def search_member_age_over(query):
     datas = {}
