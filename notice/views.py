@@ -71,8 +71,7 @@ def get_notices_by_all(reuest, query):
     n1 = Notice.objects.filter(text__icontains = query)
     n2 = Notice.objects.filter(sender_id__id__contains = query)
     n3 = Notice.objects.filter(receiver_id__id__contains = query)
-    n4 = Notice.objects.filter(notice_id = query)
-    notices = n1 | n2 | n3 | n4
+    notices = n1 | n2 | n3
     return notices
 
 def process_admin_read(request):
