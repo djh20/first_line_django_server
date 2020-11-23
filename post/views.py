@@ -1012,9 +1012,8 @@ def user_read_like_post(request):
     datas ={}
     index = len(like_records) -1
     for record in like_records:
-        datas[index] = record.get_dic()
+        datas[index] = record.post_id.get_dic(False)
         index -= 1
-    print(datas)
     return JsonResponse(datas)
 
 
@@ -1026,7 +1025,7 @@ def user_read_lookup_post(request):
     datas = {}
     index = len(lookup_records) - 1
     for record in lookup_records:
-        datas[index] = record.get_dic()
+        datas[index] = record.post_id.get_dic(False)
         index -= 1
     return JsonResponse(datas)
 
