@@ -67,6 +67,14 @@ def get_notices_by_contaion_text(request, query):
     notices = Notice.objects.filter(text__icontains = query)
     return notices
 
+def get_notices_by_all(reuest, query):
+    n1 = Notice.objects.filter(text__icontains = query)
+    n2 = Notice.objects.filter(sender_id__id__contains = query)
+    n3 = Notice.objects.filter(receiver_id__id__contains = query)
+    n4 = Notice.objects.filter(notice_id = query)
+    notices = n1 | n2 | n3 | n4
+    return notices
+
 def process_admin_read(request):
     condition_dic = {
         "알림 번호" : get_notices_by_notice_id, 
@@ -75,7 +83,8 @@ def process_admin_read(request):
         "내용" : get_notices_by_contaion_text, 
         "발신 시각(이상)" : get_notices_by_send_datetime_upper, 
         "발신 시각(이하)" : get_notices_by_send_datetime_lower, 
-        "읽음" : get_notices_by_is_read
+        "읽음" : get_notices_by_is_read,
+        "전체" : get_notices_by_all,
     }
     function = condition_dic[request.GET.get('condition')]
     query = request.GET.get('query')

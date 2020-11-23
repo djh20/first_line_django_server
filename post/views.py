@@ -117,7 +117,7 @@ def search_post(search_code,query,isAdmin):
     '조회수(이상)':7,'조회수(이하)':8,'좋아요(이상)':9 , '좋아요(이하)':10, '댓글 수(이상)':11, '댓글 수(이하)':12,
     '태그':13, '작성자':14, '작성일(이후)':15, '작성일(이전)':16, '수정일(이후)':17, '수정일(이전)':18,
     '온도(이상)': 19, '온도(이하)':20, '키워드':21, 'P/DP(이상)':22, 'P/DP(이하)':23, 'A/DA(이상)':24,
-    'A/DA(이하)':25, '욕설확률(이상)':26, '욕설확률(이하)':27, '삭제여부':28, '블라인드 여부':29,'내용':30}
+    'A/DA(이하)':25, '욕설확률(이상)':26, '욕설확률(이하)':27, '삭제여부':28, '블라인드 여부':29,'내용':30,'전체검색':31}
 
     if code['전체'] == search_code:
         datas = search_post_entire(isAdmin)
@@ -242,6 +242,10 @@ def search_post(search_code,query,isAdmin):
     elif code['내용'] == search_code:
         datas = search_post_text(query,isAdmin)
         return JsonResponse(datas, status=200)
+
+    elif code['전체검색'] == search_code:
+        datas = search_post_entire_query(query, isAdmin)
+        return JsonResponse(datas, status = 200)
 
     
 
@@ -496,9 +500,9 @@ def search_post_editing_date_after(query,isAdmin):
     datas ={}
     # 관리자인 경우 blind나 삭제된 게시글을 조회 가능 - 
     if isAdmin:
-        result_posts = Post.objects.filter(editing_date__gte=query)
+        result_posts = Post.objects.filter(editing_date__gte=query).exclude(editing_date = None)
     else:
-        result_posts = Post.objects.filter(editing_date__gte=query, is_deleted = False , is_blinded = False)
+        result_posts = Post.objects.filter(editing_date__gte=query, is_deleted = False , is_blinded = False).exclude(editing_date = None)
 
     post_num = len(result_posts)-1
     for result in result_posts:
@@ -510,9 +514,9 @@ def search_post_editing_date_before(query,isAdmin):
     datas ={}
     # 관리자인 경우 blind나 삭제된 게시글을 조회 가능 - 
     if isAdmin:
-        result_posts = Post.objects.filter(editing_date__lte=query)
+        result_posts = Post.objects.filter(editing_date__lte=query).exclude(editing_date = None)
     else:
-        result_posts = Post.objects.filter(editing_date__lte=query, is_deleted = False , is_blinded = False)
+        result_posts = Post.objects.filter(editing_date__lte=query, is_deleted = False , is_blinded = False).exclude(editing_date = None)
 
     post_num = len(result_posts)-1
     for result in result_posts:
@@ -674,6 +678,30 @@ def search_post_text(query,isAdmin):
         result_posts = Post.objects.filter(text__contains=query)
     else:
         result_posts = Post.objects.filter(text__contains=query, is_deleted = False , is_blinded = False)
+    post_num = len(result_posts)-1
+    print(post_num)
+    for result in result_posts:
+        datas[post_num]=result.get_dic(isAdmin)
+        post_num-=1
+    return datas
+
+def search_post_entire_query(query,isAdmin):
+    datas ={}
+    # 관리자인 경우 blind나 삭제된 게시글을 조회 가능
+    if isAdmin:
+        r1 = Post.objects.filter(text__contains=query)
+        r2 = Post.objects.filter(keyword__keyword__icontains = query)
+        r3 = Post.objects.filter(writer__nickname__icontains= query)
+        r4 = Post.objects.filter(title__contains=query)
+        r5 = Post.objects.filter(tag__icontains = query)
+        result_posts = r1 | r2 | r3 | r4 | r5
+    else:
+        r1 = Post.objects.filter(text__contains=query, is_deleted = False , is_blinded = False)
+        r2 = Post.objects.filter(keyword__keyword__icontains=query, is_deleted = False , is_blinded = False)
+        r3 = Post.objects.filter(writer__nickname__icontains=query, is_deleted = False , is_blinded = False)
+        r4 = Post.objects.filter(title__contains=query, is_deleted = False , is_blinded = False)
+        r5 = Post.objects.filter(tag__icontains=query, is_deleted = False , is_blinded = False)
+        result_posts = r1 | r2 | r3 | r4 | r5
     post_num = len(result_posts)-1
     print(post_num)
     for result in result_posts:

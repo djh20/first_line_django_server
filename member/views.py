@@ -143,7 +143,6 @@ def admin_search_member(search_code,query):
         return JsonResponse(datas, status = 200)
 
     elif code['필명'] == search_code:
-        print('필명')
         datas = search_member_nickname(query)
         return JsonResponse(datas, status = 200)
 
