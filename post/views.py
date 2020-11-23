@@ -9,9 +9,11 @@ from django.views.decorators.csrf import csrf_exempt
 from django.conf import settings
 from member.models import Member, SementicRecord
 from keyword_.models import Keyword
+from notice.views import process_create_notice
 import json
 import datetime
 from urllib import parse
+import requests
 
 # 사용자의 게시글 관련 요청 처리 함수
 @csrf_exempt 
@@ -83,14 +85,11 @@ def user_search_post(request):
         if request.method == 'GET':
             search_code = int(request.GET.get('code'))
             query = request.GET.get('query')
-            page_no = request.GET.get('page_no')
-
             # 검색 작업 수행
-            return search_post(search_code,query,page_no,False)
+            return search_post(search_code,query,False)
     except Exception as e :
         print(e)
-        datas = {'message' : '오류가 발생했습니다.'}
-        return JsonResponse(datas, status=400)
+        return JsonResponse({'message' : '게시글 검색중 오류가 발생했습니다.'}, status=459)
 
 
 # 관리자 게시글 검색 함수
@@ -101,21 +100,18 @@ def admin_search_post(request):
         if request.method == 'GET':
             search_code = int(request.GET.get('code'))
             query = parse.unquote(request.GET.get('query'))
-            page_no = request.GET.get('page_no')
-
             # 검색 작업 수행
-            return search_post(search_code,query,page_no,True)         
+            return search_post(search_code,query,True)         
     except Exception as e :
         print(e)
-        datas = {}
-        return JsonResponse(datas, status=400)
+        return JsonResponse({'message' : '게시글 검색중 오류가 발생했습니다.'}, status=459)
 
 
 # 게시글 검색 함수
-def search_post(search_code,query,page_no,isAdmin):
+def search_post(search_code,query,isAdmin):
     if query == '':
         datas = search_post_entire(isAdmin)
-        return JsonResponse(datas)
+        return JsonResponse(datas, status=200)
         
     code = {'전체':0,'차가움':1,'따뜻함':2,'뜨거움':3,'제목':4,'게시글 번호(이상)':5,'게시글 번호(이하)':6,
     '조회수(이상)':7,'조회수(이하)':8,'좋아요(이상)':9 , '좋아요(이하)':10, '댓글 수(이상)':11, '댓글 수(이하)':12,
@@ -125,127 +121,127 @@ def search_post(search_code,query,page_no,isAdmin):
 
     if code['전체'] == search_code:
         datas = search_post_entire(isAdmin)
-        return JsonResponse(datas)
+        return JsonResponse(datas, status=200)
 
     elif code['차가움'] == search_code:
         datas = search_post_cold(isAdmin)
-        return JsonResponse(datas)
+        return JsonResponse(datas, status=200)
 
     elif code['따뜻함'] == search_code:
         datas = search_post_warm(isAdmin)
-        return JsonResponse(datas)
+        return JsonResponse(datas, status=200)
 
     elif code['뜨거움'] == search_code:
         datas = search_post_hot(isAdmin)
-        return JsonResponse(datas)
+        return JsonResponse(datas, status=200)
 
     elif code['제목'] == search_code:
         datas = search_post_title(query,isAdmin)
-        return JsonResponse(datas)
+        return JsonResponse(datas, status=200)
 
     elif code['게시글 번호(이상)'] == search_code:
         datas = search_post_num_over(query,isAdmin)
-        return JsonResponse(datas)
+        return JsonResponse(datas, status=200)
 
     elif code['게시글 번호(이하)'] == search_code:
         datas = search_post_num_under(query,isAdmin)
-        return JsonResponse(datas)
+        return JsonResponse(datas, status=200)
 
     elif code['조회수(이상)'] == search_code:
         datas = search_post_num_lookup_over(query,isAdmin)
-        return JsonResponse(datas)
+        return JsonResponse(datas, status=200)
 
     elif code['조회수(이하)'] == search_code:
         datas = search_post_num_lookup_under(query,isAdmin)
-        return JsonResponse(datas)
+        return JsonResponse(datas, status=200)
 
     elif code['좋아요(이상)'] == search_code:
         datas = search_post_num_good_over(query,isAdmin)
-        return JsonResponse(datas)
+        return JsonResponse(datas, status=200)
 
     elif code['좋아요(이하)'] == search_code:
         datas = search_post_num_good_under(query,isAdmin)
-        return JsonResponse(datas)
+        return JsonResponse(datas, status=200)
 
     elif code['댓글 수(이상)'] == search_code:
         datas = search_post_num_reply_over(query,isAdmin)
-        return JsonResponse(datas)
+        return JsonResponse(datas, status=200)
 
     elif code['댓글 수(이하)'] == search_code:
         datas = search_post_num_reply_under(query,isAdmin)
-        return JsonResponse(datas)
+        return JsonResponse(datas, status=200)
 
     elif code['태그'] == search_code:
         datas = search_post_tag(query,isAdmin)
-        return JsonResponse(datas)
+        return JsonResponse(datas, status=200)
 
     elif code['작성자'] == search_code:
         datas = search_post_writer(query,isAdmin)
-        return JsonResponse(datas)
+        return JsonResponse(datas, status=200)
 
     elif code['작성일(이후)'] == search_code:
         datas = search_post_writing_date_after(query,isAdmin)
-        return JsonResponse(datas)
+        return JsonResponse(datas, status=200)
 
     elif code['작성일(이전)'] == search_code:
         datas = search_post_writing_date_before(query,isAdmin)
-        return JsonResponse(datas)
+        return JsonResponse(datas, status=200)
 
     elif code['수정일(이후)'] == search_code:
         datas = search_post_editing_date_after(query,isAdmin)
-        return JsonResponse(datas)
+        return JsonResponse(datas, status=200)
 
     elif code['수정일(이전)'] == search_code:
         datas = search_post_editing_date_before(query,isAdmin)
-        return JsonResponse(datas)
+        return JsonResponse(datas, status=200)
 
     elif code['온도(이상)'] == search_code:
         datas = search_post_temperature_over(query,isAdmin)
-        return JsonResponse(datas)
+        return JsonResponse(datas, status=200)
 
     elif code['온도(이하)'] == search_code:
         datas = search_post_temperature_under(query,isAdmin)
-        return JsonResponse(datas)
+        return JsonResponse(datas, status=200)
 
     elif code['키워드'] == search_code:
         datas = search_post_keyword(query,isAdmin)
-        return JsonResponse(datas)
+        return JsonResponse(datas, status=200)
 
     elif code['P/DP(이상)'] == search_code:
         datas = search_post_P_DP_over(query,isAdmin)
-        return JsonResponse(datas)
+        return JsonResponse(datas, status=200)
 
     elif code['P/DP(이하)'] == search_code:
         datas = search_post_P_DP_under(query,isAdmin)
-        return JsonResponse(datas)
+        return JsonResponse(datas, status=200)
 
     elif code['A/DA(이상)'] == search_code:
         datas = search_post_A_DA_over(query,isAdmin)
-        return JsonResponse(datas)
+        return JsonResponse(datas, status=200)
 
     elif code['A/DA(이하)'] == search_code:
         datas = search_post_A_DA_under(query,isAdmin)
-        return JsonResponse(datas)
+        return JsonResponse(datas, status=200)
 
     elif code['욕설확률(이상)'] == search_code:
         datas = search_post_slang_over(query,isAdmin)
-        return JsonResponse(datas)
+        return JsonResponse(datas, status=200)
 
     elif code['욕설확률(이하)'] == search_code:
         datas = search_post_slang_under(query,isAdmin)
-        return JsonResponse(datas)
+        return JsonResponse(datas, status=200)
 
     elif code['삭제여부'] == search_code:
         datas = search_post_is_deleted(query,isAdmin)
-        return JsonResponse(datas)
+        return JsonResponse(datas, status=200)
 
     elif code['블라인드 여부'] == search_code:
         datas = search_post_is_blinded(query,isAdmin)
-        return JsonResponse(datas)
+        return JsonResponse(datas, status=200)
 
     elif code['내용'] == search_code:
         datas = search_post_text(query,isAdmin)
-        return JsonResponse(datas)
+        return JsonResponse(datas, status=200)
 
     
 
@@ -274,9 +270,9 @@ def search_post_cold(isAdmin):
     datas ={}
     # 관리자인 경우 blind나 삭제된 게시글을 조회 가능 - 온도 조절이 필요함 (32도보다 낮은경우가 적음)
     if isAdmin:
-        result_posts = Post.objects.filter(temperature__lt=32)
+        result_posts = Post.objects.filter(temperature__lt=40.0)
     else:
-        result_posts = Post.objects.filter(temperature__lt=32, is_deleted = False , is_blinded = False)
+        result_posts = Post.objects.filter(temperature__lt=40.0, is_deleted = False , is_blinded = False)
 
     post_num = len(result_posts)-1
     for result in result_posts:
@@ -288,9 +284,9 @@ def search_post_warm(isAdmin):
     datas ={}
     # 관리자인 경우 blind나 삭제된 게시글을 조회 가능
     if isAdmin:
-        result_posts = Post.objects.filter(temperature__range = (32.0 , 38.0))
+        result_posts = Post.objects.filter(temperature__range = (40.0 , 60.0))
     else:
-        result_posts = Post.objects.filter(temperature__range = (32.0 , 38.0), is_deleted = False , is_blinded = False)
+        result_posts = Post.objects.filter(temperature__range = (40.0 , 60.0), is_deleted = False , is_blinded = False)
 
     post_num = len(result_posts)-1
     for result in result_posts:
@@ -302,9 +298,9 @@ def search_post_hot(isAdmin):
     datas ={}
     # 관리자인 경우 blind나 삭제된 게시글을 조회 가능
     if isAdmin:
-        result_posts = Post.objects.filter(temperature__gt=38)
+        result_posts = Post.objects.filter(temperature__gt=60.0)
     else:
-        result_posts = Post.objects.filter(temperature__gt=38, is_deleted = False , is_blinded = False)
+        result_posts = Post.objects.filter(temperature__gt=60.0, is_deleted = False , is_blinded = False)
     
     post_num = len(result_posts)-1
     for result in result_posts:
@@ -398,7 +394,7 @@ def search_post_num_good_over(query,isAdmin):
         post_num-=1
     return datas
 
-def search_post_num_like_under(query,isAdmin):
+def search_post_num_good_under(query,isAdmin):
     datas ={}
     # 관리자인 경우 blind나 삭제된 게시글을 조회 가능 - 
     if isAdmin:
@@ -692,10 +688,10 @@ def search_post_text(query,isAdmin):
 def write_post(memberInfo, postInfo):
     # 게시글에 대한 검증 작업
     if not isValid_text_length(postInfo['text']):
-        return JsonResponse({'message':'글의 내용이 너무 깁니다.\n3000자 제한'},status=410)
+        return JsonResponse({'message':'글의 내용이 너무 깁니다.\n3000자 제한'},status=453)
 
     if not isValid_title_length(postInfo['title']):
-        return JsonResponse({'message':'제목이 너무 깁니다.\n30자 제한'},status=411)
+        return JsonResponse({'message':'제목이 너무 깁니다.\n30자 제한'},status=452)
 
     # 태그 문자열로 변환
     tag = ""
@@ -718,6 +714,8 @@ def write_post(memberInfo, postInfo):
     try:
         # 키워드를 사용한 경우
         keyword = Keyword.objects.get(keyword=postInfo['keyword'])
+        keyword.suggest_amount = keyword.suggest_amount + 1
+        keyword.save()
         post = Post(title=postInfo['title'], text=postInfo['text'], tag=tag, writer=member, keyword=keyword, prob_p_dp=prob_p_dp, prob_a_da=prob_a_da, prob_is_slang=prob_slang, temperature=temperature)
         post.save()
     except:
@@ -741,7 +739,7 @@ def user_read_all_post(request):
             datas[post_num] = result.get_dic(False)
             post_num-= 1
         return JsonResponse(datas)
-    return JsonResponse(datas)
+    return JsonResponse({'message':'잘못된 요청 메소드'},status = 490)
 
 
 # 특정 게시글을 조회한다 - 조회 기록 남기기
@@ -761,32 +759,50 @@ def user_read_post(request,pk) :
             lookup_record = LookupRecord(member_id=member,post_id=post,temperature=post.temperature,is_like=False)
             lookup_record.save()
             # 감정지수 남기기
+            try:
+                sementic_record = SementicRecord.objects.get(date = datetime.date.today() ,member = member)
+            except:
+                sementic_record = SementicRecord(member = member)
+                sementic_record.save()
+
             sementic_record = SementicRecord.objects.get(date = datetime.date.today() ,member = member)
             sementic_record.current_temperature = ((sementic_record.current_temperature*sementic_record.reflected_number) + post.temperature)/(sementic_record.reflected_number + 1)
             sementic_record.reflected_number = sementic_record.reflected_number + 1
             sementic_record.save()
 
-
         if(post == None):
-            return_data = {'message' : '해당 게시글이 존재하지 않습니다.'}
-            return JsonResponse(return_data, status=410)
+            return JsonResponse({'message' : '해당 게시글이 존재하지 않습니다.'}, status=454)
         # 삭제처리된 게시글인 경우
         elif post.is_deleted == True:
-            return_data = {'message' : '해당 게시글이 존재하지 않습니다.'}
-            return JsonResponse(return_data, status=411)
+            return JsonResponse({'message' : '해당 게시글이 존재하지 않습니다.'}, status=454)
+        elif post.is_blinded == True:
+            return JsonResponse({'message':'해당 게시글이 블라인드 처리되었습니다.'}, status=460)
         else :
             # 글을 조회하는 사용자가 작성자인지 확인
             memberInfo = get_member_info(request.COOKIES)
             member = Member.objects.get(id = memberInfo['id'])
             
+            # 프론트 변경시 해당 코드 삭제 ---------------------------------------------------------------------------------------
             return JsonResponse(post.get_dic(False))
             
-            # Front 측에서 아래의 형식을 받도록 수정해야 함
+            # 내가 작성한 게시글인지 확인
             if post.writer.id == member.id:
-                return_data = {'post':post.get_dic(False), 'isMyPost': True}
+                isMyPost = True
             else:
-                return_data = {'post':post.get_dic(False), 'isMyPost': False}
-            return JsonResponse(return_data)
+                isMyPost = False
+            
+            # 내가 좋아요를 한 게시글인지 확인
+            isLike = False
+            try:
+                record = LikeRecord.objects.filter(member_id__id = member.id,post_id__post_id = post.post_id)
+                if len(record) == 1:
+                    isLike = True
+            except:
+                pass
+
+            # Front 측에서 아래의 형식을 받도록 수정해야 함
+            return_data = {'post':post.get_dic(False), 'isMyPost': isMyPost, 'isLike':isLike}
+            return JsonResponse(return_data, status = 200)
 
 
 def admin_read_all_post(request):
@@ -797,8 +813,8 @@ def admin_read_all_post(request):
         for result in results:
             datas[post_num] = result.get_dic(True)
             post_num-=1
-        return JsonResponse(datas)
-    return JsonResponse(datas)
+        return JsonResponse(datas,status = 200)
+    return JsonResponse({'message':'잘못된 요청 메소드'},status = 490)
 
 
 
@@ -814,10 +830,10 @@ def user_update_post(memberInfo, postInfo):
     if isValid_access_post(member_id,post_id):
         # 게시글에 대한 검증 작업
         if not isValid_text_length(postInfo['text']):
-            return JsonResponse({'message':'글의 내용이 너무 깁니다.\n3000자 제한'},status=410)
+            return JsonResponse({'message':'글의 내용이 너무 깁니다.\n3000자 제한'},status=453)
 
         if not isValid_title_length(postInfo['title']):
-            return JsonResponse({'message':'제목이 너무 깁니다.\n30자 제한'},status=411)
+            return JsonResponse({'message':'제목이 너무 깁니다.\n30자 제한'},status=452)
         
         # 태그 문자열로 변환
         tag = ""
@@ -851,19 +867,18 @@ def user_update_post(memberInfo, postInfo):
         post.save()
         return JsonResponse({'message':'성공적으로 수정되었습니다.'},status=200)
     else:
-        return_data = {'message' : '해당 게시글을 수정할 수 없습니다.'}
-        return JsonResponse(return_data, status=410)
+        return JsonResponse({'message' : '게시글 수정을 실패하였습니다.'}, status=455)
 
 
 
-# 관리자가 게시글을 수정하는 함수
+# 관리자가 게시글을 수정하는 함수 - 사용하지 않음
 def admin_update_post(memberInfo, postInfo):
     # 게시글에 대한 검증 작업
     if not isValid_text_length(postInfo['text']):
-        return JsonResponse({'message':'글의 내용이 너무 깁니다.\n3000자 제한'},status=410)
+        return JsonResponse({'message':'글의 내용이 너무 깁니다.\n3000자 제한'},status=453)
 
     if not isValid_title_length(postInfo['title']):
-        return JsonResponse({'message':'제목이 너무 깁니다.\n30자 제한'},status=411)
+        return JsonResponse({'message':'제목이 너무 깁니다.\n30자 제한'},status=452)
 
     # 태그 문자열로 변환
     tag = ""
@@ -883,7 +898,7 @@ def admin_update_post(memberInfo, postInfo):
     temperature = res['result']['temperature']
 
     # 수정할 post 읽어와 수정하기
-    post = Post.objects.get(post_id = post_id)
+    post = Post.objects.get(post_id = postInfo['post_id'])
     post.title = postInfo['title']
     post.text = postInfo['text']
     post.tag = tag
@@ -913,14 +928,12 @@ def user_delete_post(memberInfo,postInfo):
             post.is_deleted = True
             post.save()
         except:
-            return_data = {'message' : '해당 게시글이 존재하지 않습니다.'}
-            return JsonResponse(return_data, status=411)
+            return JsonResponse({'message' : '해당 게시글이 존재하지 않습니다.'}, status=454)
 
         return JsonResponse({'message' : '성공적으로 삭제되었습니다.'}, status=200)
         
     else:
-        return_data = {'message' : '해당 게시글을 삭제할 수 없습니다.'}
-        return JsonResponse(return_data, status=410)
+        return JsonResponse({'message' : '게시글 삭제를 실패하였습니다.'}, status=456)
 
 
 # 관리자가 게시글을 삭제하는 함수
@@ -931,8 +944,7 @@ def admin_delete_post(posts):
             post.is_deleted = True
             post.save()
         except:
-            return_data = {'message' : '게시글 삭제중 오류가 발생했습니다.'}
-            return JsonResponse(return_data, status=410)
+            return JsonResponse({'message' : '게시글 삭제를 실패하였습니다.'}, status=456)
     return JsonResponse({'message' : '성공적으로 삭제되었습니다.'}, status=200)
     
 
@@ -952,8 +964,7 @@ def admin_blind_post(request):
             post.is_blinded = True
             post.save()
         except:
-            return_data = {'message' : '게시글 블라인드중 오류가 발생했습니다.'}
-            return JsonResponse(return_data, status=410)
+            return JsonResponse({'message' : '게시글 블라인드중 오류가 발생했습니다.'}, status=457)
     return JsonResponse({'message' : '성공적으로 블라인드 처리되었습니다.'}, status=200)
 
 
@@ -962,7 +973,7 @@ def admin_blind_post(request):
 # ==================================================================================================================================
 
 @csrf_exempt
-def user_like_post(requestm,pk):
+def user_like_post(request,pk):
     try:
         member_info = get_member_info(request.COOKIES)
         member = Member.objects.get(id = member_info['id'])
@@ -984,14 +995,18 @@ def user_like_post(requestm,pk):
             lookup_record.save()
             post.num_good = post.num_good + 1 
             post.save()
+
+            # 알림 등록
+            process_create_notice(1,post,"",member,post.writer)   # 1 : 좋아요
+            
             return JsonResponse({'message':'게시글 좋아요가 등록되었습니다.'},status=200)
     except:
-        return JsonResponse({'message':'게시글 좋아요 처리에 실패했습니다.'},status=411)
+        return JsonResponse({'message':'게시글 좋아요 처리에 실패했습니다.'},status=458)
     
 
 
 # ==================================================================================================================================
-#                                               사용자 게시글 좋아요, 조회 기록 조회 함수
+#                                               사용자 게시글 좋아요, 조회 기록 조회, 작성 게시글 조회 함수
 # ==================================================================================================================================
  
 @csrf_exempt
@@ -1016,6 +1031,18 @@ def user_read_lookup_post(request):
     index = len(lookup_records) - 1
     for record in lookup_records:
         datas[index] = record.get_dic()
+        index -= 1
+    return JsonResponse(datas)
+
+@csrf_exempt
+def user_read_writed_post(request):
+    member_info = get_member_info(request.COOKIES)
+    member = Member.objects.get(id = member_info['id'])
+    posts = Post.objects.filter(writer = member)
+    datas = {}
+    index = len(posts) - 1
+    for post in posts:
+        datas[index] = post.get_dic(False)
         index -= 1
     return JsonResponse(datas)
 

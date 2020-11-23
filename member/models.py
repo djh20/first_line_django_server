@@ -1,4 +1,5 @@
 from django.db import models
+from django.conf import settings
 
 class Member(models.Model):
     id = models.CharField(max_length = 20, primary_key = True)
@@ -22,7 +23,8 @@ class Member(models.Model):
             'age' : self.age,
             'gender' : '남성' if self.gender == True else '여성',
             'phonenumber' : self.phonenumber,
-            'email' : self.email
+            'email' : self.email,
+            'authority' : ('회원' if self.authority == settings.AUTHORITY['회원'] else '관리자')
         }
 
 class SementicRecord(models.Model):
@@ -35,6 +37,8 @@ class SementicRecord(models.Model):
 
     def get_dic(self):
         return {
-            'date' : self.date.strftime("%m%d"), 
-            'temperature' : format(self.current_temperature,".2f")
+            'year' : self.date.year, 
+            'month' : self.date.month, 
+            'date' : self.date.day, 
+            'temperature' : format(self.current_temperature,".1f")
         }

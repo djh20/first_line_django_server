@@ -17,7 +17,7 @@ def process_admin_report(request):
         return process_admin_read(request)
     # if request.method == "POST":
     #     return process_admin_create(request)
-    return JsonResponse({'message' : "존재하지 않는 요청"})
+    return JsonResponse({'message' : "잘못된 요청 메소드"},status = 490)
 
 
 
@@ -45,7 +45,6 @@ def get_reports_by_process_date_lower(request, query):
 def get_reports_by_report_writer(request, query):
     reports = Report.objects.filter(report_writer = query)
     return reports
-    
 def get_reports_by_process_writer(request, query):
     reports = Report.objects.filter(process_writer = query)
     return reports
@@ -82,19 +81,18 @@ def process_admin_read(request):
     function = condition_dic[request.GET.get('condition')]
     query = request.GET.get('query')
     reports = function(request, query)
-    print(reports)
     data = {}
     idx = 0
     for report in reports:
         data[idx] = report.get_for_admin()
         idx+=1
     print(data)
-    return JsonResponse({'data' : data})
+    return JsonResponse({'data' : data},status=200)
 
 def read_report(request, pk):
     if request.method == "GET":
         report = Report.objects.filter(report_id = pk).first()
-        return JsonResponse({'data' : report.get_for_admin()})
+        return JsonResponse({'data' : report.get_for_admin()},status = 200)
 
 @csrf_exempt 
 def process_report(request):
@@ -121,10 +119,10 @@ def process_report(request):
             report.is_processed = True
 
             report.save()
-            return JsonResponse({'message' : "성공적으로 삭제되었습니다"}, status=200)
+            return JsonResponse({'message' : "성공적으로 처리되었습니다"}, status=200)
         except Exception as e:
             print(e)
-            return JsonResponse({'message' : "처리에 실패했습니다"}, status=400)
+            return JsonResponse({'message' : "신고 처리에 실패했습니다"}, status=452)
 
 
         

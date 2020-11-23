@@ -6,6 +6,7 @@ from member.jwt_manager import get_member_info
 from django.views.decorators.csrf import csrf_exempt
 from post.models import Post
 from member.models import Member
+from notice.views import process_create_notice
 import requests, json
 from django.conf import settings
 from urllib import parse
@@ -25,7 +26,7 @@ def user_process_reply(request):
             return user_search_reply(request)
 
         else:
-            return JsonResponse({'message' : '필수정보 누락'}, status = 411)
+            return JsonResponse({'message' : '필수정보 누락'}, status = 489)
 
     elif request.method == 'POST':
         # Create 작업 - 댓글 등록(사용자)
@@ -93,72 +94,71 @@ def admin_search_reply(request):
         return search_reply(search_code,query,True)         
     except Exception as e :
         print(e)
-        datas = {'message':'검색중 '}
-        return JsonResponse(datas, status=400)
+        return JsonResponse({'message':'댓글 검색중 오류가 발생했습니다.'}, status=458)
 
 def search_reply(search_code,query,isAdmin,memberInfo = None):
     if query == '':
         datas = search_reply_entire(isAdmin,memberInfo)
-        return JsonResponse(datas)
+        return JsonResponse(datas, status = 200)
     code ={'댓글 번호 (이상)':0,'댓글 번호 (이하)':1,"게시글 번호 (이상)":2,"게시글 번호 (이하)":3, '내용':4,'작성자':5,'작성일 (이후)':6,
         '작성일 (이전)':7, '수정일(이후)':8,'수정일(이전)':9,'욕설 확률 (이상)':10,'욕설 확률 (이하)':11,'삭제 여부':12,'블라인드 여부':13}
     
 
     if code['댓글 번호 (이상)']==search_code:
         datas = search_reply_num_over(query,isAdmin)
-        return JsonResponse(datas)
+        return JsonResponse(datas, status = 200)
 
     elif code['댓글 번호 (이하)'] == search_code:
         datas = search_reply_num_under(query,isAdmin)
-        return JsonResponse(datas)
+        return JsonResponse(datas, status = 200)
 
     elif code['게시글 번호 (이상)'] == search_code:
         datas = search_reply_post_num_over(query,isAdmin)
-        return JsonResponse(datas)
+        return JsonResponse(datas, status = 200)
 
     elif code['게시글 번호 (이하)'] == search_code:
         datas = search_reply_post_num_under(query,isAdmin)
-        return JsonResponse(datas)
+        return JsonResponse(datas, status = 200)
     
     elif code['내용'] == search_code:
         datas = search_reply_text(query,isAdmin,memberInfo)
-        return JsonResponse(datas)
+        return JsonResponse(datas, status = 200)
 
     elif code['작성자'] == search_code:
         datas = search_reply_writer(query,isAdmin)
-        return JsonResponse(datas)
+        return JsonResponse(datas, status = 200)
 
     elif code['작성일 (이후)'] == search_code:
         datas = search_reply_writing_date_after(query,isAdmin,memberInfo)
-        return JsonResponse(datas)
+        return JsonResponse(datas, status = 200)
 
     elif code['작성일 (이전)'] == search_code:
         datas = search_reply_writing_date_before(query,isAdmin,memberInfo)
-        return JsonResponse(datas)
+        return JsonResponse(datas, status = 200)
 
     elif code['수정일(이후)'] == search_code:
         datas = search_reply_edting_date_after(query,isAdmin,memberInfo)
-        return JsonResponse(datas)
+        return JsonResponse(datas, status = 200)
 
     elif code['수정일(이전)'] == search_code:
         datas = search_reply_edting_date_before(query,isAdmin,memberInfo)
-        return JsonResponse(datas)
+        return JsonResponse(datas, status = 200)
 
     elif code['욕설 확률 (이상)'] == search_code:
         datas = search_reply_slang_over(query,isAdmin)
-        return JsonResponse(datas)
+        return JsonResponse(datas, status = 200)
 
     elif code['욕설 확률 (이하)'] == search_code:
         datas = search_reply_slang_under(query,isAdmin)
-        return JsonResponse(datas)
+        return JsonResponse(datas, status = 200)
 
     elif code['삭제 여부'] == search_code:
         datas = search_reply_is_deleted(query,isAdmin)
-        return JsonResponse(datas)
+        return JsonResponse(datas, status = 200)
 
     elif code['블라인드 여부'] == search_code:
         datas = search_reply_is_blinded(query,isAdmin)
-        return JsonResponse(datas)
+        return JsonResponse(datas, status = 200)
 
 
 def search_reply_entire(isAdmin, memberInfo = None):
@@ -333,26 +333,32 @@ def create_reply(memberInfo,replyInfo):
         try:
             # 길이 검증
             if not isValid_reply_length(replyInfo['text']):
-                return JsonResponse({'message':'댓글이 너무 깁니다.'},status=411)
+                return JsonResponse({'message':'댓글이 너무 깁니다.'},status=452)
 
             member = Member.objects.get(id = memberInfo['id'])
             post = Post.objects.get(post_id=int(replyInfo['post_id']))
 
-            # params = {'text': replyInfo['text']}
-            # res = requests.get(settings.BERT_SERVER, params = params).json()
+            params = {'text': replyInfo['text']}
+            res = requests.get(settings.BERT_SERVER, params = params).json()
     
-            # prob_slang = res['result']['prob_slang']
+            prob_slang = res['result']['prob_slang']
  
             prob_slang = 0
             reply = Reply(post_id = post, writer = member,text = replyInfo['text'], prob_is_slang=prob_slang)
             reply.save()
             post.num_reply = post.num_reply + 1
             post.save()
+
+            # 게시글 작성자에게 알림 전송 - 게시글 작성자가 아닌 사람이 댓글을 작성한 경우
+            if post.writer.id != member.id:
+                process_create_notice(0,post.post_id,replyInfo['text'],member,post.writer) # 0:댓글
+
             return JsonResponse({'message':"댓글 등록 성공"}, status=200)
         except Exception as e:
-                print(e)
+            print(e)
+            return JsonResponse({'message':"댓글 등록 실패"}, status=453)
     else:
-        return JsonResponse({'message':"댓글 등록 실패"}, status=410)
+        return JsonResponse({'message':"댓글 등록 실패"}, status=453)
 
 
 
@@ -379,13 +385,25 @@ def user_read_reply(memberInfo, postId):
                 isMine[reply_num] = False
             reply_num += 1         
 
-        return JsonResponse(datas)
+        return JsonResponse(datas,status = 200)
 
         # 하단처럼 받도록 Front 수정 요망
         return JsonResponse({'datas':datas,'isMine':isMine},status = 200)
     except Exception as e:
         print(e)
-        return JsonResponse({'message':"댓글이 존재하지 않습니다"}, status=417)
+        return JsonResponse({'message':"댓글이 존재하지 않습니다"}, status=454)
+
+
+def user_read_writed_reply(request):
+    member_info = get_member_info(request.COOKIES)
+    member = Member.objects.get(id = member_info['id'])
+    replies = Reply.objects.filter(writer = member)
+    datas = {}
+    index = len(replies) - 1
+    for reply in replies:
+        datas[index] = reply.get_dic(False)
+        index -= 1
+    return JsonResponse(datas, status = 200)
 
 
 def admin_read_all_reply():
@@ -395,7 +413,7 @@ def admin_read_all_reply():
     for reply in replies:
         datas[reply_num] = reply.get_dic(True)
         reply_num -= 1
-    return JsonResponse(datas)
+    return JsonResponse(datas, status = 200)
 
 
 # =========================================================================
@@ -418,7 +436,7 @@ def user_update_reply(memberInfo, replyInfo):
 
         return JsonResponse({'message':'댓글이 수정되었습니다.'},status=200)
     else:
-        return JsonResponse({'message':'잘못된 접근입니다.'},status=410)
+        return JsonResponse({'message':'댓글 수정에 실패하였습니다.'},status=455)
     
 
 
@@ -459,7 +477,7 @@ def user_delete_reply(memberInfo, replyInfo):
         return JsonResponse({'message': '댓글이 삭제되었습니다.'},status=200)
     else:
 
-        return JsonResponse({'message':'잘못된 접근입니다.'},status=410)
+        return JsonResponse({'message':'댓글 삭제를 실패하였습니다.'},status=455)
 
 
 
@@ -473,8 +491,7 @@ def admin_delete_reply(replies):
             reply.save()
         return JsonResponse({'message': '댓글이 삭제되었습니다.'},status=200)
     except:
-        print('댓글 삭제 실패-A')
-        return JsonResponse({'message':'댓글 삭제중 오류가 발생했습니다.'},status=411)
+        return JsonResponse({'message':'댓글 삭제중 오류가 발생했습니다.'},status=456)
     
 
 # =========================================================================
@@ -493,7 +510,7 @@ def admin_blind_reply(request):
             reply.save()
         return JsonResponse({'message': '댓글이 블라인드 처리되었습니다.'},status=200)
     except:
-        return JsonResponse({'message':'댓글 블라인드 처리중 오류가 발생했습니다.'},status=411)
+        return JsonResponse({'message':'댓글 블라인드 처리중 오류가 발생했습니다.'},status=457)
 
 
 

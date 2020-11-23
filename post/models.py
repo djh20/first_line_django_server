@@ -7,7 +7,6 @@ class Post(models.Model):
     post_id = models.AutoField(primary_key=True)
     title = models.CharField(max_length = 20)
     text = models.TextField(max_length = 3000)
-    like = models.IntegerField(default=0)
     tag = models.CharField(max_length = 100)
     num_reply = models.IntegerField(default = 0)
     writer = models.ForeignKey(Member, on_delete=models.CASCADE)
@@ -40,7 +39,6 @@ class Post(models.Model):
             'post_id' : self.post_id,
             'title' : self.title,
             'text' : self.text,
-            'like' : self.like,
             'num_reply' : self.num_reply,
             'tag' : tag,
             'writer' : self.writer.nickname,
@@ -58,7 +56,6 @@ class Post(models.Model):
             'post_id' : self.post_id,
             'title' : self.title,
             'text' : self.text,
-            'like' : self.like,
             'num_reply' : self.num_reply,
             'tag' : self.tag,
             'writer' : self.writer.nickname,
@@ -103,8 +100,8 @@ class LookupRecord(models.Model):
     member_id = models.ForeignKey(Member, on_delete=models.CASCADE)
     post_id = models.ForeignKey(Post, on_delete=models.CASCADE)
     date = models.DateTimeField(auto_now_add=True)
-    temperature = models.FloatField()
-    is_like = models.BooleanField()
+    temperature = models.FloatField(default = 0.0)
+    is_like = models.BooleanField(default = False)
 
     def get_dic(self):
         return {

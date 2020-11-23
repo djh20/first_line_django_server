@@ -14,6 +14,8 @@ def process_admin_keyword(request):
         return process_admin_read(request)
     elif request.method == "POST":
         return process_admin_create(request)
+    elif request.method == 'DELETE':
+        return admin_keyword_delete(request)
 
 def get_keywords_by_keyword_match(request, query):
     keywords = Keyword.objects.filter(keyword__icontains = query)
@@ -59,41 +61,87 @@ def process_admin_read(request):
     for keyword in keywords:
         data[idx] = keyword.get_for_admin()
         idx+=1
-    return JsonResponse({'data' : data})
+    return JsonResponse({'data' : data},status = 200)
 
 
 
 
 
 def process_admin_create(request):
-
     keyword_info = json.loads(request.body.decode('utf-8'))
     keyword_text = keyword_info['keyword']
     to_use_date = datetime.datetime.strptime(keyword_info['to_use_date'],"%Y-%m-%d").date()
+
+    # 날짜 겹치는지 체크
+    if Keyword.objects.filter(suggest_date = to_use_date).count() != 0:
+        return JsonResponse({'message' : '기존 키워드와 사용 예정일이 중복되었습니다.'}, status=457)
+
     try: # 이미 존재 하는 키워드 
-        keyword = Keyword.objects.filter(keyword = keyword_text).first()
+        keyword = Keyword.objects.get(keyword = keyword_text)
+          
+        # 등록된 키워드와 최근 사용일이 30일 이상
         day_diff = abs((keyword.recent_used_date - to_use_date).days)
-        try : # 등록된 키워드와 최근 사용일이 30일 이상
-            if day_diff <= settings.KEYWORD_ALLOW_GAP:
-                raise Exception
-            keyword.suggest_amount += 1
-            keyword.recent_used_date = to_use_date
-            keyword.save()
-            return JsonResponse({'message' : '기존 키워드의 사용 예정일이 수정되었습니다'}, status=200)
-        except: # 30일 이하
-            return JsonResponse({'message' : '30일 이내에 사용되었거나 사용될 예정입니다'}, status=400)
+        if day_diff <= settings.KEYWORD_ALLOW_GAP:
+            return JsonResponse({'message' : '30일 이내에 사용되었습니다.'}, status=452)
+        
+        day_diff = abs((keyword.suggest_date - to_use_date).days)
+        if day_diff <= settings.KEYWORD_ALLOW_GAP:
+            return JsonResponse({'message' : '30일 이내에 사용될 예정입니다.'}, status=452)
+
+        keyword.suggest_date = to_use_date
+        keyword.save()
+        return JsonResponse({'message' : '기존 키워드의 사용 예정일이 수정되었습니다.'}, status=200)    
     except : 
         try: # 새로운 키워드일 경우
             registrator_info = get_member_info(request.COOKIES)
-            print(registrator_info)
             registrator = Member.objects.get(id=registrator_info['id'])
-            keyword = Keyword(keyword=keyword_text, recent_used_date = to_use_date, registrator=registrator)
+            keyword = Keyword(keyword=keyword_text, suggest_date = to_use_date, registrator=registrator)
             keyword.save()
-            return JsonResponse({'message' : '새로운 키워드가 등록되었습니다'}, status=200)
+            return JsonResponse({'message' : '새로운 키워드가 등록되었습니다.'}, status=200)
         except : 
-            return JsonResponse({'message' : '권한이 없습니다'}, status=400)
+            return JsonResponse({'message' : '키워드 등록에 실패하였습니다.'}, status=453)
 
 
+def admin_keyword_delete(request):
+    try:
+        keywords = json.loads(request.body.decode('utf-8'))
+        keywords = keywords['keyword']
+        keywords = keywords['rows']
+
+        delete_count = len(keywords)
+        failCount = 0
+
+        for keyword in keywords:
+            key = Keyword.objects.get(keyword = keyword['id'])
+            if key.suggest_amount == 0:
+                key.delete()
+            else:
+                failCount += 1
+        if failCount == 0: 
+            return JsonResponse({'message':'키워드를 정상적으로 삭제하였습니다.'},status = 200)
+        elif delete_count != failCount:
+            return JsonResponse({'message':'삭제 가능한 키워드만 삭제하였습니다.'},status = 454)
+        else:
+            return JsonResponse({'message':'키워드 삭제가 불가능합니다.'},status = 455)
+    except :
+        return JsonResponse({'message':'키워드 삭제중 오류가 발생하였습니다.'},status = 456)
+    
+
+
+
+def user_process_keyword(request):
+    try:
+        today = datetime.date.today()
+        today_keyword = Keyword.objects.get(suggest_date = today)
+
+        # 최근 사용일이 오늘이 아닌경우
+        if today_keyword.recent_used_date != today:
+            today_keyword.recent_used_date = today
+            today_keyword.save()
+        return JsonResponse(today_keyword.get_keyword(),status = 200)
+    except:
+        return JsonResponse({'message':'오늘의 키워드가 존재하지 않습니다.'},status = 458)
+    
 
 
     
