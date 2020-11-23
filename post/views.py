@@ -782,10 +782,6 @@ def user_read_post(request,pk) :
             memberInfo = get_member_info(request.COOKIES)
             member = Member.objects.get(id = memberInfo['id'])
             
-<<<<<<< HEAD
-            
-=======
->>>>>>> 6149a467d11de092453fac8a5ced86d6d5e38411
             # 내가 작성한 게시글인지 확인
             if post.writer.id == member.id:
                 isMyPost = True

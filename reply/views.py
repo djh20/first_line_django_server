@@ -384,11 +384,6 @@ def user_read_reply(memberInfo, postId):
             else:
                 isMine[reply_num] = False
             reply_num += 1         
-<<<<<<< HEAD
-        # 하단처럼 받도록 Front 수정 요망
-=======
-
->>>>>>> 6149a467d11de092453fac8a5ced86d6d5e38411
         return JsonResponse({'datas':datas,'isMine':isMine},status = 200)
     except Exception as e:
         print(e)
