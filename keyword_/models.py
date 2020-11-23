@@ -18,7 +18,7 @@ class Keyword(models.Model):
             'keyword' : self.keyword,
             'registrator' : self.registrator.id,
             'registration_date' : self.registration_date.strftime("%y.%m.%d %p %I:%M"),
-            'recent_used_date' : self.recent_used_date.strftime("%y.%m.%d"),
+            'recent_used_date' : (self.recent_used_date.strftime("%y.%m.%d") if self.recent_used_date != None else ""),
             'suggest_date' : self.suggest_date.strftime("%y.%m.%d"),
             'suggest_amount' : self.suggest_amount
         }

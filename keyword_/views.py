@@ -70,8 +70,11 @@ def process_admin_read(request):
 def process_admin_create(request):
     keyword_info = json.loads(request.body.decode('utf-8'))
     keyword_text = keyword_info['keyword']
-    to_use_date = datetime.datetime.strptime(keyword_info['to_use_date'],"%Y-%m-%d").date()
-
+    try:
+        to_use_date = datetime.datetime.strptime(keyword_info['to_use_date'],"%Y-%m-%d").date()
+    except :
+        return JsonResponse({'message':'날짜가 입력되지 않았습니다.'},status=453)
+    
     # 날짜 겹치는지 체크
     if Keyword.objects.filter(suggest_date = to_use_date).count() != 0:
         return JsonResponse({'message' : '기존 키워드와 사용 예정일이 중복되었습니다.'}, status=457)
