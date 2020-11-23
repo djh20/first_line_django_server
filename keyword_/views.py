@@ -130,17 +130,19 @@ def admin_keyword_delete(request):
 
 
 def user_process_keyword(request):
-    try:
-        today = datetime.date.today()
-        today_keyword = Keyword.objects.get(suggest_date = today)
+    if request.method == 'GET':
+        try:
+            today = datetime.date.today()
+            today_keyword = Keyword.objects.get(suggest_date = today)
 
-        # 최근 사용일이 오늘이 아닌경우
-        if today_keyword.recent_used_date != today:
-            today_keyword.recent_used_date = today
-            today_keyword.save()
-        return JsonResponse(today_keyword.get_keyword(),status = 200)
-    except:
-        return JsonResponse({'message':'오늘의 키워드가 존재하지 않습니다.'},status = 458)
+            # 최근 사용일이 오늘이 아닌경우
+            if today_keyword.recent_used_date != today:
+                today_keyword.recent_used_date = today
+                today_keyword.save()
+            return JsonResponse(today_keyword.get_keyword(),status = 200)
+        except:
+            return JsonResponse({'message':'오늘의 키워드가 존재하지 않습니다.'},status = 458)
+    return JsonResponse({'message':'잘못된 요청 메소드'},status = 490)
     
 
 

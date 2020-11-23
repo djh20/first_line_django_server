@@ -782,9 +782,6 @@ def user_read_post(request,pk) :
             memberInfo = get_member_info(request.COOKIES)
             member = Member.objects.get(id = memberInfo['id'])
             
-            # 프론트 변경시 해당 코드 삭제 ---------------------------------------------------------------------------------------
-            return JsonResponse(post.get_dic(False))
-            
             # 내가 작성한 게시글인지 확인
             if post.writer.id == member.id:
                 isMyPost = True
@@ -799,8 +796,6 @@ def user_read_post(request,pk) :
                     isLike = True
             except:
                 pass
-
-            # Front 측에서 아래의 형식을 받도록 수정해야 함
             return_data = {'post':post.get_dic(False), 'isMyPost': isMyPost, 'isLike':isLike}
             return JsonResponse(return_data, status = 200)
 
