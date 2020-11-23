@@ -89,8 +89,7 @@ def user_search_post(request):
             return search_post(search_code,query,False)
     except Exception as e :
         print(e)
-        datas = {'message' : '오류가 발생했습니다.'}
-        return JsonResponse(datas, status=400)
+        return JsonResponse({'message' : '게시글 검색중 오류가 발생했습니다.'}, status=459)
 
 
 # 관리자 게시글 검색 함수
@@ -105,8 +104,7 @@ def admin_search_post(request):
             return search_post(search_code,query,True)         
     except Exception as e :
         print(e)
-        datas = {'message' : '오류가 발생했습니다.'}
-        return JsonResponse(datas, status=400)
+        return JsonResponse({'message' : '게시글 검색중 오류가 발생했습니다.'}, status=459)
 
 
 # 게시글 검색 함수
@@ -272,9 +270,9 @@ def search_post_cold(isAdmin):
     datas ={}
     # 관리자인 경우 blind나 삭제된 게시글을 조회 가능 - 온도 조절이 필요함 (32도보다 낮은경우가 적음)
     if isAdmin:
-        result_posts = Post.objects.filter(temperature__lt=32)
+        result_posts = Post.objects.filter(temperature__lt=40.0)
     else:
-        result_posts = Post.objects.filter(temperature__lt=32, is_deleted = False , is_blinded = False)
+        result_posts = Post.objects.filter(temperature__lt=40.0, is_deleted = False , is_blinded = False)
 
     post_num = len(result_posts)-1
     for result in result_posts:
@@ -286,9 +284,9 @@ def search_post_warm(isAdmin):
     datas ={}
     # 관리자인 경우 blind나 삭제된 게시글을 조회 가능
     if isAdmin:
-        result_posts = Post.objects.filter(temperature__range = (32.0 , 38.0))
+        result_posts = Post.objects.filter(temperature__range = (40.0 , 60.0))
     else:
-        result_posts = Post.objects.filter(temperature__range = (32.0 , 38.0), is_deleted = False , is_blinded = False)
+        result_posts = Post.objects.filter(temperature__range = (40.0 , 60.0), is_deleted = False , is_blinded = False)
 
     post_num = len(result_posts)-1
     for result in result_posts:
@@ -300,9 +298,9 @@ def search_post_hot(isAdmin):
     datas ={}
     # 관리자인 경우 blind나 삭제된 게시글을 조회 가능
     if isAdmin:
-        result_posts = Post.objects.filter(temperature__gt=38)
+        result_posts = Post.objects.filter(temperature__gt=60.0)
     else:
-        result_posts = Post.objects.filter(temperature__gt=38, is_deleted = False , is_blinded = False)
+        result_posts = Post.objects.filter(temperature__gt=60.0, is_deleted = False , is_blinded = False)
     
     post_num = len(result_posts)-1
     for result in result_posts:
@@ -396,7 +394,7 @@ def search_post_num_good_over(query,isAdmin):
         post_num-=1
     return datas
 
-def search_post_num_like_under(query,isAdmin):
+def search_post_num_good_under(query,isAdmin):
     datas ={}
     # 관리자인 경우 blind나 삭제된 게시글을 조회 가능 - 
     if isAdmin:
@@ -716,6 +714,8 @@ def write_post(memberInfo, postInfo):
     try:
         # 키워드를 사용한 경우
         keyword = Keyword.objects.get(keyword=postInfo['keyword'])
+        keyword.suggest_amount = keyword.suggest_amount + 1
+        keyword.save()
         post = Post(title=postInfo['title'], text=postInfo['text'], tag=tag, writer=member, keyword=keyword, prob_p_dp=prob_p_dp, prob_a_da=prob_a_da, prob_is_slang=prob_slang, temperature=temperature)
         post.save()
     except:
@@ -759,24 +759,33 @@ def user_read_post(request,pk) :
             lookup_record = LookupRecord(member_id=member,post_id=post,temperature=post.temperature,is_like=False)
             lookup_record.save()
             # 감정지수 남기기
+            try:
+                sementic_record = SementicRecord.objects.get(date = datetime.date.today() ,member = member)
+            except:
+                sementic_record = SementicRecord(member = member)
+                sementic_record.save()
+
             sementic_record = SementicRecord.objects.get(date = datetime.date.today() ,member = member)
             sementic_record.current_temperature = ((sementic_record.current_temperature*sementic_record.reflected_number) + post.temperature)/(sementic_record.reflected_number + 1)
             sementic_record.reflected_number = sementic_record.reflected_number + 1
             sementic_record.save()
 
         if(post == None):
-            return_data = {'message' : '해당 게시글이 존재하지 않습니다.'}
-            return JsonResponse(return_data, status=454)
+            return JsonResponse({'message' : '해당 게시글이 존재하지 않습니다.'}, status=454)
         # 삭제처리된 게시글인 경우
         elif post.is_deleted == True:
-            return_data = {'message' : '해당 게시글이 존재하지 않습니다.'}
-            return JsonResponse(return_data, status=454)
+            return JsonResponse({'message' : '해당 게시글이 존재하지 않습니다.'}, status=454)
+        elif post.is_blinded == True:
+            return JsonResponse({'message':'해당 게시글이 블라인드 처리되었습니다.'}, status=460)
         else :
             # 글을 조회하는 사용자가 작성자인지 확인
             memberInfo = get_member_info(request.COOKIES)
             member = Member.objects.get(id = memberInfo['id'])
             
+<<<<<<< HEAD
             
+=======
+>>>>>>> 6149a467d11de092453fac8a5ced86d6d5e38411
             # 내가 작성한 게시글인지 확인
             if post.writer.id == member.id:
                 isMyPost = True
@@ -791,8 +800,6 @@ def user_read_post(request,pk) :
                     isLike = True
             except:
                 pass
-
-            # Front 측에서 아래의 형식을 받도록 수정해야 함
             return_data = {'post':post.get_dic(False), 'isMyPost': isMyPost, 'isLike':isLike}
             return JsonResponse(return_data, status = 200)
 
@@ -805,8 +812,8 @@ def admin_read_all_post(request):
         for result in results:
             datas[post_num] = result.get_dic(True)
             post_num-=1
-        return JsonResponse(datas)
-    return JsonResponse(datas)
+        return JsonResponse(datas,status = 200)
+    return JsonResponse({'message':'잘못된 요청 메소드'},status = 490)
 
 
 
@@ -859,12 +866,11 @@ def user_update_post(memberInfo, postInfo):
         post.save()
         return JsonResponse({'message':'성공적으로 수정되었습니다.'},status=200)
     else:
-        return_data = {'message' : '해당 게시글을 수정할 수 없습니다.'}
-        return JsonResponse(return_data, status=455)
+        return JsonResponse({'message' : '게시글 수정을 실패하였습니다.'}, status=455)
 
 
 
-# 관리자가 게시글을 수정하는 함수
+# 관리자가 게시글을 수정하는 함수 - 사용하지 않음
 def admin_update_post(memberInfo, postInfo):
     # 게시글에 대한 검증 작업
     if not isValid_text_length(postInfo['text']):
@@ -891,7 +897,7 @@ def admin_update_post(memberInfo, postInfo):
     temperature = res['result']['temperature']
 
     # 수정할 post 읽어와 수정하기
-    post = Post.objects.get(post_id = post_id)
+    post = Post.objects.get(post_id = postInfo['post_id'])
     post.title = postInfo['title']
     post.text = postInfo['text']
     post.tag = tag
@@ -922,14 +928,12 @@ def user_delete_post(memberInfo,postInfo):
             post.is_deleted = True
             post.save()
         except:
-            return_data = {'message' : '해당 게시글이 존재하지 않습니다.'}
-            return JsonResponse(return_data, status=454)
+            return JsonResponse({'message' : '해당 게시글이 존재하지 않습니다.'}, status=454)
 
         return JsonResponse({'message' : '성공적으로 삭제되었습니다.'}, status=200)
         
     else:
-        return_data = {'message' : '해당 게시글을 삭제할 수 없습니다.'}
-        return JsonResponse(return_data, status=456)
+        return JsonResponse({'message' : '게시글 삭제를 실패하였습니다.'}, status=456)
 
 
 # 관리자가 게시글을 삭제하는 함수
@@ -940,8 +944,7 @@ def admin_delete_post(posts):
             post.is_deleted = True
             post.save()
         except:
-            return_data = {'message' : '게시글 삭제중 오류가 발생했습니다.'}
-            return JsonResponse(return_data, status=456)
+            return JsonResponse({'message' : '게시글 삭제를 실패하였습니다.'}, status=456)
     return JsonResponse({'message' : '성공적으로 삭제되었습니다.'}, status=200)
     
 
@@ -961,8 +964,7 @@ def admin_blind_post(request):
             post.is_blinded = True
             post.save()
         except:
-            return_data = {'message' : '게시글 블라인드중 오류가 발생했습니다.'}
-            return JsonResponse(return_data, status=457)
+            return JsonResponse({'message' : '게시글 블라인드중 오류가 발생했습니다.'}, status=457)
     return JsonResponse({'message' : '성공적으로 블라인드 처리되었습니다.'}, status=200)
 
 

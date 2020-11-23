@@ -52,7 +52,8 @@ class AfterFilter(MiddlewareMixin):
 
         #####  로그인 로그 남기기  #####
         isLogin = re.compile('.*member\/login\/')
-        if isLogin.match(url):
+        isLogin2 = re.compile('.*member\/admin\/login\/')
+        if isLogin.match(url) or isLogin2.match(url):
             loginInfo = json.loads(request.body.decode('utf-8'))
             login_id = loginInfo['id']
             create_Login_log(requester_ip=request.get_host(),login_id=login_id,login_result=(True if response.status_code == 200 else False))
