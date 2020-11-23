@@ -914,6 +914,7 @@ def admin_update_post(memberInfo, postInfo):
 
 # 사용자가 게시글을 삭제하는 함수
 def user_delete_post(memberInfo,postInfo):
+    print("dasdsa")
     member_id = memberInfo['id']
     post_id = postInfo['id']
     
@@ -993,7 +994,6 @@ def user_like_post(request,pk):
 
             # 알림 등록
             process_create_notice(1,post.post_id,"",member,post.writer)   # 1 : 좋아요
-            
             return JsonResponse({'message':'게시글 좋아요가 등록되었습니다.'},status=200)
     except:
         return JsonResponse({'message':'게시글 좋아요 처리에 실패했습니다.'},status=458)
@@ -1014,6 +1014,7 @@ def user_read_like_post(request):
     for record in like_records:
         datas[index] = record.get_dic()
         index -= 1
+    print(datas)
     return JsonResponse(datas)
 
 

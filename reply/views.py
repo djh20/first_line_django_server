@@ -384,7 +384,6 @@ def user_read_reply(memberInfo, postId):
             else:
                 isMine[reply_num] = False
             reply_num += 1         
-
         return JsonResponse({'datas':datas,'isMine':isMine},status = 200)
     except Exception as e:
         print(e)

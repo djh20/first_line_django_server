@@ -30,7 +30,7 @@ class Member(models.Model):
 class SementicRecord(models.Model):
     sementic_record_id = models.AutoField(primary_key = True)
     member = models.ForeignKey(Member, on_delete=models.CASCADE)
-    date = models.DateField(auto_now_add = True)
+    date = models.DateField()
     initial_value = models.FloatField(default = 36.5)
     current_temperature = models.FloatField(default = 36.5)
     reflected_number = models.PositiveIntegerField(default = 1)

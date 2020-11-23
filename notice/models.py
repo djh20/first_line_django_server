@@ -27,3 +27,4 @@ class Notice(models.Model):
             'text' : self.text,
             'source_url' : self.source_url
         }
+

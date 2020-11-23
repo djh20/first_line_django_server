@@ -129,6 +129,7 @@ def process_delete_my_notice(request):
         return JsonResponse({'message' : '알림 삭제 실패'}, status=456)
 
 
+
 def process_create_notice(notice_code,post_id,text,sender,receiver):
     code = {'댓글':0,'좋아요':1}
     try:
