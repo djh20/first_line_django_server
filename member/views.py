@@ -285,7 +285,7 @@ def user_create_info(registInfo):
         member.save()
         data['id'] = member.id
         data['authority'] = settings.AUTHORITY['회원']
-        print(settings.AUTHORITY['회원'])
+
         jwt_data = encode_jason_to_jwt(data)
         return_data = {'jwt': jwt_data, 'message': '회원가입 성공'}
         return JsonResponse(return_data, status=200)
@@ -429,7 +429,7 @@ def admin_update_info(newInfo):
         return JsonResponse({'message':'회원정보 수정에 실패하였습니다.'}, status=461)
 
 
-
+@csrf_exempt
 def anybody_change_password(request):
     try:
         member_id = json.loads(request.body.decode('utf-8'))
