@@ -117,10 +117,13 @@ def search_post(search_code,query,isAdmin):
     '조회수(이상)':7,'조회수(이하)':8,'좋아요(이상)':9 , '좋아요(이하)':10, '댓글 수(이상)':11, '댓글 수(이하)':12,
     '태그':13, '작성자':14, '작성일(이후)':15, '작성일(이전)':16, '수정일(이후)':17, '수정일(이전)':18,
     '온도(이상)': 19, '온도(이하)':20, '키워드':21, 'P/DP(이상)':22, 'P/DP(이하)':23, 'A/DA(이상)':24,
-    'A/DA(이하)':25, '욕설확률(이상)':26, '욕설확률(이하)':27, '삭제여부':28, '블라인드 여부':29,'내용':30,'전체검색':31}
+    'A/DA(이하)':25, '욕설확률(이상)':26, '욕설확률(이하)':27, '삭제여부':28, '블라인드 여부':29,'내용':30}
 
     if code['전체'] == search_code:
-        datas = search_post_entire(isAdmin)
+        if query == None:
+            datas = search_post_entire(isAdmin)
+        else:
+            datas = search_post_entire_query(query, isAdmin)
         return JsonResponse(datas, status=200)
 
     elif code['차가움'] == search_code:
@@ -243,9 +246,7 @@ def search_post(search_code,query,isAdmin):
         datas = search_post_text(query,isAdmin)
         return JsonResponse(datas, status=200)
 
-    elif code['전체검색'] == search_code:
-        datas = search_post_entire_query(query, isAdmin)
-        return JsonResponse(datas, status = 200)
+
 
     
 
@@ -731,8 +732,11 @@ def write_post(memberInfo, postInfo):
 
     # 긍/부정, 격렬/차분, 비속어 확률과 글의 온도 획득
     params = {'text': postInfo['title'] + "\n" + postInfo['text']}
-
-    res = requests.get(settings.BERT_SERVER, params = params).json()
+    try:
+        res = requests.get(settings.BERT_SERVER, params = params).json()
+    except expression as identifier:
+        return JsonResponse({'message':'글 작성중 오류가 발생하였습니다.\n관리자에게 문의 바랍니다.'},status=461)
+    
     prob_p_dp = res['result']['prob_p_dp']
     prob_a_da = res['result']['prob_a_da']
     prob_slang = res['result']['prob_slang']
