@@ -96,7 +96,7 @@ def search_log_ip(query):
 
 def search_log_requester(query):
     datas = {}
-    logs = Log.objects.filter(requester_id__id = query)
+    logs = Log.objects.filter(requester_id__id__contains = query)
     index = len(logs) - 1
     for log in logs:
         datas[index] = log.get_dic()

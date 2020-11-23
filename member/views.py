@@ -143,7 +143,6 @@ def admin_search_member(search_code,query):
         return JsonResponse(datas, status = 200)
 
     elif code['필명'] == search_code:
-        print('필명')
         datas = search_member_nickname(query)
         return JsonResponse(datas, status = 200)
 
@@ -174,13 +173,17 @@ def admin_search_member(search_code,query):
         return JsonResponse({'message':'코드 에러\n잘못된 요청 코드입니다.'},status = 460)
 
 def search_member_id(query):
+    datas = {}
     member = Member.objects.get(id__contains = query)
-    return member.get_dic()
+    datas[0] = member.get_dic()
+    return datas
 
 
 def search_member_nickname(query):
+    datas = {}
     member = Member.objects.get(nickname__contains = query)
-    return member.get_dic()
+    datas[0] = member.get_dic()
+    return datas
 
 def search_member_age_over(query):
     datas = {}
@@ -285,7 +288,7 @@ def user_create_info(registInfo):
         member.save()
         data['id'] = member.id
         data['authority'] = settings.AUTHORITY['회원']
-        print(settings.AUTHORITY['회원'])
+
         jwt_data = encode_jason_to_jwt(data)
         return_data = {'jwt': jwt_data, 'message': '회원가입 성공'}
         return JsonResponse(return_data, status=200)
@@ -429,7 +432,7 @@ def admin_update_info(newInfo):
         return JsonResponse({'message':'회원정보 수정에 실패하였습니다.'}, status=461)
 
 
-
+@csrf_exempt
 def anybody_change_password(request):
     try:
         member_id = json.loads(request.body.decode('utf-8'))

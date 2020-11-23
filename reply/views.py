@@ -101,7 +101,7 @@ def search_reply(search_code,query,isAdmin,memberInfo = None):
         datas = search_reply_entire(isAdmin,memberInfo)
         return JsonResponse(datas, status = 200)
     code ={'댓글 번호 (이상)':0,'댓글 번호 (이하)':1,"게시글 번호 (이상)":2,"게시글 번호 (이하)":3, '내용':4,'작성자':5,'작성일 (이후)':6,
-        '작성일 (이전)':7, '수정일(이후)':8,'수정일(이전)':9,'욕설 확률 (이상)':10,'욕설 확률 (이하)':11,'삭제 여부':12,'블라인드 여부':13}
+        '작성일 (이전)':7, '수정일(이후)':8,'수정일(이전)':9,'욕설 확률 (이상)':10,'욕설 확률 (이하)':11,'삭제 여부':12,'블라인드 여부':13 ,'전체':14}
     
 
     if code['댓글 번호 (이상)']==search_code:
@@ -158,6 +158,10 @@ def search_reply(search_code,query,isAdmin,memberInfo = None):
 
     elif code['블라인드 여부'] == search_code:
         datas = search_reply_is_blinded(query,isAdmin)
+        return JsonResponse(datas, status = 200)
+
+    elif code['전체'] == search_code:
+        datas = search_reply_entire_query(query,isAdmin)
         return JsonResponse(datas, status = 200)
 
 
@@ -226,8 +230,7 @@ def search_reply_text(query, isAdmin, memberInfo = None):
 
 def search_reply_writer(query, isAdmin):
     datas ={}
-    member = Member.objects.get(nickname = query)
-    replies = Reply.objects.filter(writer = member)
+    replies = Reply.objects.filter(writer__nickname__contains = query)
     index = len(replies) - 1
     for reply in replies:
         datas[index] = reply.get_dic(isAdmin)
@@ -263,10 +266,10 @@ def search_reply_writing_date_before(query, isAdmin, memberInfo = None):
 def search_reply_edting_date_after(query, isAdmin, memberInfo = None):
     datas ={}
     if isAdmin:
-        replies = Reply.objects.filter(edting_date__gte = query)
+        replies = Reply.objects.filter(editing_date__gte = query).exclude(editing_date = None)
     else:
         member = Member.objects.get(id = memberInfo['id'])
-        replies = Reply.objects.filter(edting_date__gte = query, writer = member, is_deleted = False)
+        replies = Reply.objects.filter(editing_date__gte = query, writer = member, is_deleted = False).exclude(editing_date = None)
     index = len(replies) - 1
     for reply in replies:
         datas[index] = reply.get_dic(isAdmin)
@@ -276,10 +279,10 @@ def search_reply_edting_date_after(query, isAdmin, memberInfo = None):
 def search_reply_edting_date_before(query, isAdmin, memberInfo = None):
     datas ={}
     if isAdmin:
-        replies = Reply.objects.filter(edting_date__lte = query)
+        replies = Reply.objects.filter(editing_date__lte = query).exclude(editing_date = None)
     else:
         member = Member.objects.get(id = memberInfo['id'])
-        replies = Reply.objects.filter(edting_date__lte = query, writer = member, is_deleted = False)
+        replies = Reply.objects.filter(editing_date__lte = query, writer = member, is_deleted = False).exclude(editing_date = None)
     index = len(replies) - 1
     for reply in replies:
         datas[index] = reply.get_dic(isAdmin)
@@ -316,6 +319,17 @@ def search_reply_is_deleted(query, isAdmin):
 def search_reply_is_blinded(query, isAdmin):
     datas ={}
     replies = Reply.objects.filter(is_blinded =  query)
+    index = len(replies) - 1
+    for reply in replies:
+        datas[index] = reply.get_dic(isAdmin)
+        index -= 1
+    return datas
+
+def search_reply_entire_query(query, isAdmin):
+    datas ={}
+    r1 = Reply.objects.filter(writer__nickname__contains = query)
+    r2 = Reply.objects.filter(text__contains = query)
+    replies = r1 | r2
     index = len(replies) - 1
     for reply in replies:
         datas[index] = reply.get_dic(isAdmin)
