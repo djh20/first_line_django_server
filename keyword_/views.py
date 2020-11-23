@@ -142,7 +142,7 @@ def user_process_keyword(request):
             if today_keyword.recent_used_date != today:
                 today_keyword.recent_used_date = today
                 today_keyword.save()
-            return JsonResponse(today_keyword.get_keyword(),status = 200)
+            return JsonResponse({'keyword':today_keyword.get_keyword()},status = 200)
         except:
             return JsonResponse({'message':'오늘의 키워드가 존재하지 않습니다.'},status = 458)
     return JsonResponse({'message':'잘못된 요청 메소드'},status = 490)
