@@ -992,7 +992,7 @@ def user_like_post(request,pk):
             post.save()
 
             # 알림 등록
-            process_create_notice(1,post,"",member,post.writer)   # 1 : 좋아요
+            process_create_notice(1,post.post_id,"",member,post.writer)   # 1 : 좋아요
             
             return JsonResponse({'message':'게시글 좋아요가 등록되었습니다.'},status=200)
     except:
