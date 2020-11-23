@@ -794,7 +794,7 @@ def user_read_post(request,pk) :
             try:
                 sementic_record = SementicRecord.objects.get(date = datetime.date.today() ,member = member)
             except:
-                sementic_record = SementicRecord(member = member)
+                sementic_record = SementicRecord(date = datetime.date.today(), member = member)
                 sementic_record.save()
 
             sementic_record = SementicRecord.objects.get(date = datetime.date.today() ,member = member)
