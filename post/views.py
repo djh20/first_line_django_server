@@ -872,8 +872,11 @@ def user_update_post(memberInfo, postInfo):
 
         # 긍/부정, 격렬/차분, 비속어 확률과 글의 온도 획득
         params = {'text': postInfo['title'] + "\n" + postInfo['text']}
-
-        res = requests.get(settings.BERT_SERVER, params = params).json()
+        try:
+            res = requests.get(settings.BERT_SERVER, params = params).json()
+        except expression as identifier:
+            return JsonResponse({'message':'글 작성중 오류가 발생하였습니다.\n관리자에게 문의 바랍니다.'},status=461)
+            
         prob_p_dp = res['result']['prob_p_dp']
         prob_a_da = res['result']['prob_a_da']
         prob_slang = res['result']['prob_slang']
